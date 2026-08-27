@@ -1,0 +1,18 @@
+RECONCILIATION SUMMARY
+========================================
+Total records processed : 60
+Matched                 : 44 (73.3%)
+Exceptions              : 16 (26.7%)
+
+Match type breakdown:
+  exact                30
+  fee_adjusted         8
+  timing_offset        6
+
+Exception reason breakdown (the honest part -- what we could NOT resolve):
+  partial_payment           5
+  missing_ledger_entry      4
+  missing_settlement        4
+  duplicate_settlement      3
+
+Full per-record audit trail saved to: reconciliation_report.csv

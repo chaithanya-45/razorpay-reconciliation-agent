@@ -1,0 +1,4 @@
+txn_ref,status,match_type,exception_reason,ledger_amount,settlement_amount,detail
+TXN1000,MATCHED,exact,,9663.52,9663.52,Amount and date match exactly.
+TXN1001,MATCHED,exact,,3824.4,3824.4,Amount and date match exactly.
+TXN1002,MATCHED,exact,,10215.15,10215.15,Amount and date match exactly.
