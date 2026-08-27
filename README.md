@@ -62,18 +62,35 @@ output/
   reconciliation_report.csv  # full per-record audit trail
   summary.txt                 # headline match rate + exception breakdown
   dashboard.html               # visual report (open directly in a browser)
+tests/
+  test_matcher.py             # automated tests for matching and exception rules
+requirements.txt              # pinned dependency ranges
 ```
 
 ## Running it
 
 ```bash
-pip install pandas rapidfuzz
+pip install -r requirements.txt
 python SRC/generate_data.py
 python SRC/matcher.py
 python SRC/report.py
 ```
 
 Then open `output/dashboard.html` in any browser to see the visual report.
+
+To run the automated checks:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+To reproduce the independent validation batch:
+
+```bash
+python SRC/generate_data_test2.py
+```
+
+The matcher does not read the ground-truth files. They are used only after reconciliation to verify that the reported MATCH/EXCEPTION outcomes are correct.
 
 ## Design decisions worth noting
 
