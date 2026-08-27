@@ -22,13 +22,14 @@ that's the whole point of the test.
 """
 
 import csv
+import os
 import random
 from datetime import datetime, timedelta
 
 random.seed(999)  # DIFFERENT seed from batch 1 (which used seed 42)
 
 NUM_BASE_RECORDS = 55
-OUTPUT_DIR = "/home/claude/reconai/data"
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 
 
 def random_date(start, end):

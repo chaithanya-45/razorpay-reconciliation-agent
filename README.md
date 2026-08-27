@@ -50,7 +50,7 @@ Tested on **two independent synthetic datasets** — a 220-record development se
 ## Project structure
 
 ```
-src/
+SRC/
   generate_data.py       # synthetic settlement + ledger data generator (batch 1)
   generate_data_test2.py # second, independent unseen test batch
   matcher.py             # core reconciliation engine
@@ -68,9 +68,9 @@ output/
 
 ```bash
 pip install pandas rapidfuzz
-python src/generate_data.py
-python src/matcher.py
-python src/report.py
+python SRC/generate_data.py
+python SRC/matcher.py
+python SRC/report.py
 ```
 
 Then open `output/dashboard.html` in any browser to see the visual report.
