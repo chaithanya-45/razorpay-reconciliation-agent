@@ -98,9 +98,10 @@ To reproduce the independent validation batch:
 
 ```bash
 python SRC/generate_data_test2.py
+python SRC/evaluate.py --settlement data/settlement_test2.csv --ledger data/ledger_test2.csv --ground-truth data/ground_truth_test2.csv
 ```
 
-The matcher does not read the ground-truth files. They are used only after reconciliation to verify that the reported MATCH/EXCEPTION outcomes are correct.
+The matcher does not read the ground-truth files. The separate evaluator uses them only after reconciliation to verify coverage and reported MATCH/EXCEPTION outcomes.
 
 ## Continuous integration
 
@@ -112,7 +113,7 @@ GitHub Actions runs the automated tests and Python syntax checks on every push t
 
 - Built an explainable payment reconciliation engine matching gateway settlements to merchant ledger records across exact, fee-adjusted, timing-offset, and fuzzy-reference scenarios.
 - Classified 275 synthetic and unseen records with 100% agreement against independently generated ground-truth outcomes, including duplicates, partial payments, missing entries, overpayments, and excessive delays.
-- Added fail-fast CSV validation, configurable command-line inputs, audit-trail CSV output, summary reporting, interactive dashboard, 11 automated tests, and continuous integration checks.
+- Added fail-fast CSV validation, configurable command-line inputs, independent evaluation, audit-trail CSV output, summary reporting, interactive dashboard, 11 automated tests, and continuous integration checks.
 
 ## Design decisions worth noting
 
