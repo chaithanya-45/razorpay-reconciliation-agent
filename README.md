@@ -92,6 +92,10 @@ python SRC/generate_data_test2.py
 
 The matcher does not read the ground-truth files. They are used only after reconciliation to verify that the reported MATCH/EXCEPTION outcomes are correct.
 
+## Continuous integration
+
+GitHub Actions runs the automated tests and Python syntax checks on every push to `main` and every pull request. The workflow is defined in `.github/workflows/tests.yml`.
+
 ## Design decisions worth noting
 
 - **Rule-based, not black-box.** Every match/exception decision follows an explicit, inspectable rule with a plain-English reason attached — this was a deliberate choice to satisfy the brief's demand for explainability over raw accuracy.
