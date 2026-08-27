@@ -50,9 +50,33 @@ class MatchResult:
 def load_data(settlement_path: str, ledger_path: str):
     settlement = pd.read_csv(settlement_path)
     ledger = pd.read_csv(ledger_path)
-    settlement["settle_date"] = pd.to_datetime(settlement["settle_date"])
-    ledger["order_date"] = pd.to_datetime(ledger["order_date"])
+    validate_data(settlement, ledger)
+    settlement["settle_date"] = pd.to_datetime(settlement["settle_date"], errors="raise")
+    ledger["order_date"] = pd.to_datetime(ledger["order_date"], errors="raise")
     return settlement, ledger
+
+
+def validate_data(settlement: pd.DataFrame, ledger: pd.DataFrame) -> None:
+    required_columns = {
+        "settlement": {"settlement_ref", "paid_amount", "settle_date"},
+        "ledger": {"ledger_ref", "expected_amount", "order_date"},
+    }
+    for name, frame in (("settlement", settlement), ("ledger", ledger)):
+        missing = required_columns[name] - set(frame.columns)
+        if missing:
+            raise ValueError(f"{name} file is missing required columns: {sorted(missing)}")
+        if frame.empty:
+            raise ValueError(f"{name} file contains no records")
+
+        ref_column = "settlement_ref" if name == "settlement" else "ledger_ref"
+        amount_column = "paid_amount" if name == "settlement" else "expected_amount"
+        if frame[ref_column].isna().any() or frame[ref_column].astype(str).str.strip().eq("").any():
+            raise ValueError(f"{name} file contains a blank reference in {ref_column}")
+        if pd.to_numeric(frame[amount_column], errors="coerce").isna().any():
+            raise ValueError(f"{name} file contains a non-numeric amount in {amount_column}")
+        date_column = "settle_date" if name == "settlement" else "order_date"
+        if pd.to_datetime(frame[date_column], errors="coerce").isna().any():
+            raise ValueError(f"{name} file contains an invalid date in {date_column}")
 
 
 def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResult]:

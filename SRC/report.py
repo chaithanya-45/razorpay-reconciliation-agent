@@ -10,6 +10,7 @@ Runs the reconciliation engine and produces the final deliverable:
 This is the file you'd actually show a judge or interviewer.
 """
 
+import argparse
 import sys
 import os
 sys.path.insert(0, os.path.dirname(__file__))
@@ -82,8 +83,16 @@ def generate_report(settlement_path, ledger_path, output_dir):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Generate an explainable settlement reconciliation report.")
+    parser.add_argument("--settlement", default=os.path.join(DATA_DIR, "settlement.csv"),
+                        help="Path to the gateway settlement CSV")
+    parser.add_argument("--ledger", default=os.path.join(DATA_DIR, "ledger.csv"),
+                        help="Path to the merchant ledger CSV")
+    parser.add_argument("--output-dir", default=OUTPUT_DIR,
+                        help="Directory for the audit CSV and summary")
+    args = parser.parse_args()
     generate_report(
-        os.path.join(DATA_DIR, "settlement.csv"),
-        os.path.join(DATA_DIR, "ledger.csv"),
-        OUTPUT_DIR,
+        args.settlement,
+        args.ledger,
+        args.output_dir,
     )

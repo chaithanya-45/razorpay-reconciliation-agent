@@ -7,7 +7,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "SRC"))
 
-from matcher import reconcile
+from matcher import load_data, reconcile, validate_data
 
 
 class ReconcileTests(unittest.TestCase):
@@ -80,6 +80,18 @@ class ReconcileTests(unittest.TestCase):
     def test_excessive_delay_is_exception(self):
         result = self.run_case("TXN-10", 1000, "2026-08-01", "TXN-10", 1000, "2026-08-09")
         self.assertEqual((result.status, result.exception_reason), ("EXCEPTION", "excessive_settlement_delay"))
+
+    def test_invalid_amount_is_rejected(self):
+        ledger = pd.DataFrame([{
+            "ledger_ref": "TXN-11", "expected_amount": "not-a-number",
+            "order_date": pd.Timestamp("2026-08-01"),
+        }])
+        settlement = pd.DataFrame([{
+            "settlement_ref": "TXN-11", "paid_amount": 1000,
+            "settle_date": pd.Timestamp("2026-08-01"),
+        }])
+        with self.assertRaisesRegex(ValueError, "non-numeric amount"):
+            validate_data(settlement, ledger)
 
 
 if __name__ == "__main__":

@@ -80,6 +80,14 @@ python SRC/report.py
 
 Then open `output/dashboard.html` in any browser to see the visual report.
 
+The report command also accepts real file exports without code changes:
+
+```bash
+python SRC/report.py --settlement path/to/settlement.csv --ledger path/to/ledger.csv --output-dir output
+```
+
+Before matching, the engine validates required columns, blank references, numeric amounts, valid dates, and empty files. Invalid inputs fail with a clear error instead of producing an unreliable report.
+
 To run the automated checks:
 
 ```bash
@@ -97,6 +105,14 @@ The matcher does not read the ground-truth files. They are used only after recon
 ## Continuous integration
 
 GitHub Actions runs the automated tests and Python syntax checks on every push to `main` and every pull request. The dashboard is published to GitHub Pages after each push to `main`. The workflows are defined in `.github/workflows/`.
+
+## Resume-ready project summary
+
+**AI Finance Controller | Python, pandas, rapidfuzz, GitHub Actions**
+
+- Built an explainable payment reconciliation engine matching gateway settlements to merchant ledger records across exact, fee-adjusted, timing-offset, and fuzzy-reference scenarios.
+- Classified 275 synthetic and unseen records with 100% agreement against independently generated ground-truth outcomes, including duplicates, partial payments, missing entries, overpayments, and excessive delays.
+- Added fail-fast CSV validation, configurable command-line inputs, audit-trail CSV output, summary reporting, interactive dashboard, 11 automated tests, and continuous integration checks.
 
 ## Design decisions worth noting
 
