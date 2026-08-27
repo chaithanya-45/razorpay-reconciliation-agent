@@ -28,10 +28,12 @@ NOTE ON DUPLICATES:
 import pandas as pd
 from dataclasses import dataclass, field
 from typing import Optional
+from rapidfuzz import fuzz
 
 
 MAX_FEE_PCT = 0.05        # gateway fees assumed to be within 0-5% of gross amount
 MAX_TIMING_OFFSET_DAYS = 7  # settlement can legitimately lag ledger by up to a week
+FUZZY_REF_THRESHOLD = 90   # rapidfuzz similarity score (0-100) to treat two ref ids as "the same, likely a typo"
 
 
 @dataclass
@@ -65,11 +67,63 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
     for _, row in settlement.iterrows():
         settlement_by_ref.setdefault(row["settlement_ref"], []).append(row)
 
-    all_refs = set(ledger_by_ref.keys()) | set(settlement_by_ref.keys())
+    # --- Fuzzy ref-id resolution pass ---
+    # Real-world settlement files and merchant ledgers sometimes use slightly
+    # different formatting for the same reference (extra whitespace, case
+    # differences, a stray character from manual re-entry). Before treating
+    # a ref as "missing" on one side, check for a close fuzzy match on the
+    # other side. If found, we treat them as the SAME transaction but flag
+    # it distinctly so the fuzzy link itself is visible in the audit trail.
+    fuzzy_ref_map = {}  # ledger_ref -> matched settlement_ref (only when NOT an exact match)
+    unmatched_ledger_refs = [r for r in ledger_by_ref if r not in settlement_by_ref]
+    unmatched_settlement_refs = [r for r in settlement_by_ref if r not in ledger_by_ref]
+
+    for l_ref in unmatched_ledger_refs:
+        best_score = 0
+        best_match = None
+        for s_ref in unmatched_settlement_refs:
+            score = fuzz.ratio(str(l_ref).strip().upper(), str(s_ref).strip().upper())
+            if score > best_score:
+                best_score = score
+                best_match = s_ref
+        if best_match and best_score >= FUZZY_REF_THRESHOLD:
+            fuzzy_ref_map[l_ref] = (best_match, best_score)
+
+    # Settlement refs that got consumed by a fuzzy match should not ALSO be
+    # evaluated on their own in the main loop below (that would double-count
+    # the same underlying transaction as two separate records).
+    consumed_settlement_refs = {matched_ref for matched_ref, _ in fuzzy_ref_map.values()}
+
+    all_refs = (set(ledger_by_ref.keys()) | set(settlement_by_ref.keys())) - consumed_settlement_refs
 
     for ref in sorted(all_refs):
         in_ledger = ref in ledger_by_ref
         in_settlement = ref in settlement_by_ref
+
+        # --- Case: fuzzy-linked ref (close but not exact match on the other side) ---
+        if in_ledger and not in_settlement and ref in fuzzy_ref_map:
+            matched_settlement_ref, score = fuzzy_ref_map[ref]
+            settle_row = settlement_by_ref[matched_settlement_ref][0]
+            ledger_amt = float(ledger_by_ref[ref]["expected_amount"])
+            settle_amt = float(settle_row["paid_amount"])
+            amt_diff = round(ledger_amt - settle_amt, 2)
+            if abs(amt_diff) < 0.01:
+                results.append(MatchResult(
+                    txn_ref=ref, status="MATCHED", match_type="fuzzy_ref_match",
+                    ledger_amount=ledger_amt, settlement_amount=settle_amt,
+                    detail=f"No exact settlement ref found, but '{matched_settlement_ref}' is a "
+                           f"{score:.0f}% textual match to ledger ref '{ref}' and amounts agree exactly. "
+                           f"Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
+                ))
+            else:
+                results.append(MatchResult(
+                    txn_ref=ref, status="EXCEPTION", exception_reason="fuzzy_ref_amount_mismatch",
+                    ledger_amount=ledger_amt, settlement_amount=settle_amt,
+                    detail=f"Settlement ref '{matched_settlement_ref}' is a {score:.0f}% textual match "
+                           f"to ledger ref '{ref}', but amounts differ by ₹{amt_diff:.2f}. "
+                           f"Needs manual confirmation this is really the same transaction."
+                ))
+            continue
 
         # --- Case: duplicate settlement entries for this ref ---
         if ref in duplicate_refs:
@@ -183,8 +237,8 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
 
 if __name__ == "__main__":
     settlement, ledger = load_data(
-        "/home/claude/reconai/data/settlement.csv",
-        "/home/claude/reconai/data/ledger.csv",
+        "data/settlement.csv",
+        "data/ledger.csv",
     )
     results = reconcile(settlement, ledger)
 

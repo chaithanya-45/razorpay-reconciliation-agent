@@ -23,7 +23,7 @@ from datetime import datetime, timedelta
 
 random.seed(42)  # reproducible for Day 1; we'll generate a second, unseen batch later for real testing
 
-NUM_BASE_RECORDS = 60  # >50 as required by the brief
+NUM_BASE_RECORDS = 220  # scaled up for a stronger throughput demonstration
 
 OUTPUT_DIR = "data"
 
@@ -62,13 +62,14 @@ def generate():
     idx = list(range(n))
     random.shuffle(idx)
 
-    clean_match_idx      = set(idx[0:30])   # 30 records: perfect match, should match cleanly
-    fee_only_idx         = set(idx[30:38])  # 8 records: ledger expects gross, settlement pays net (fee diff) -> should still match (explainable diff)
-    timing_offset_idx    = set(idx[38:44])  # 6 records: settlement date is a few days after ledger date -> should still match
-    partial_payment_idx  = set(idx[44:49])  # 5 records: settlement paid LESS than expected -> should be EXCEPTION (partial payment)
-    duplicate_idx        = set(idx[49:52])  # 3 records: settlement has a duplicate entry -> should be EXCEPTION (duplicate)
-    missing_in_settle_idx= set(idx[52:56])  # 4 records: exists in ledger, missing from settlement -> should be EXCEPTION (missing settlement)
-    missing_in_ledger_idx= set(idx[56:60])  # 4 records: exists in settlement, missing from ledger -> should be EXCEPTION (missing ledger entry / unrecorded sale)
+    clean_match_idx      = set(idx[0:105])   # 105 records: perfect match, should match cleanly
+    fee_only_idx         = set(idx[105:135])  # 30 records: ledger expects gross, settlement pays net (fee diff) -> should still match (explainable diff)
+    timing_offset_idx    = set(idx[135:160])  # 25 records: settlement date is a few days after ledger date -> should still match
+    fuzzy_ref_idx        = set(idx[160:170])  # 10 records: settlement ref has a formatting typo -> should still match via fuzzy logic
+    partial_payment_idx  = set(idx[170:186])  # 16 records: settlement paid LESS than expected -> should be EXCEPTION (partial payment)
+    duplicate_idx        = set(idx[186:196])  # 10 records: settlement has a duplicate entry -> should be EXCEPTION (duplicate)
+    missing_in_settle_idx= set(idx[196:208])  # 12 records: exists in ledger, missing from settlement -> should be EXCEPTION (missing settlement)
+    missing_in_ledger_idx= set(idx[208:220])  # 12 records: exists in settlement, missing from ledger -> should be EXCEPTION (missing ledger entry / unrecorded sale)
 
     for i, r in enumerate(records):
         txn_id = r["txn_id"]
@@ -107,6 +108,23 @@ def generate():
                 "settle_date": offset_date.strftime("%Y-%m-%d"),
             })
             ground_truth.append((txn_id, "MATCH", "timing_offset"))
+
+        elif i in fuzzy_ref_idx:
+            # inject a realistic formatting typo into the settlement-side ref.
+            # Only case/whitespace/hyphen variants are used -- these always
+            # normalize back to the original txn_id, so they can never
+            # accidentally collide with another real transaction's ID
+            # (unlike a digit-shift typo, which risks landing on a sequential
+            # neighbor ID that already exists as its own transaction).
+            typo_variants = [
+                txn_id.lower(),                      # case difference
+                txn_id + " ",                         # trailing whitespace
+                txn_id.replace("TXN", "TXN-"),        # stray hyphen
+            ]
+            settlement_ref = random.choice(typo_variants)
+            settlement_rows.append({"settlement_ref": settlement_ref, "paid_amount": r["gross_amount"],
+                                     "settle_date": r["date"].strftime("%Y-%m-%d")})
+            ground_truth.append((txn_id, "MATCH", "fuzzy_ref_match"))
 
         elif i in partial_payment_idx:
             partial = round(r["gross_amount"] * random.uniform(0.4, 0.8), 2)
@@ -167,6 +185,7 @@ def generate():
     print(f"  clean_match:        {len(clean_match_idx)}")
     print(f"  fee_only:           {len(fee_only_idx)}")
     print(f"  timing_offset:      {len(timing_offset_idx)}")
+    print(f"  fuzzy_ref_typo:     {len(fuzzy_ref_idx)}")
     print(f"  partial_payment:    {len(partial_payment_idx)}")
     print(f"  duplicate:          {len(duplicate_idx)}")
     print(f"  missing_in_settle:  {len(missing_in_settle_idx)}")
