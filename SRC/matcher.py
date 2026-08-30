@@ -23,6 +23,14 @@ NOTE ON DUPLICATES:
   If a settlement ref id appears MORE THAN ONCE, that is itself flagged as
   an exception (duplicate_settlement) regardless of whether the amounts match,
   because a merchant's ledger only expects to be paid once per transaction.
+
+NOTE ON CURRENCY / GST (added):
+  Real settlement/ledger pairs aren't always in the same currency, and a
+  merchant's ledger sometimes stores a GST-inclusive amount while the
+  gateway settles the GST-exclusive amount. Both are normalized to a common
+  basis (INR, pre-tax) before the existing matching tiers run, so the core
+  matching logic above didn't need to change -- only what "ledger_amt" and
+  "settle_amt" mean going into it.
 """
 
 import pandas as pd
@@ -31,27 +39,29 @@ from typing import Optional
 from rapidfuzz import fuzz
 
 
-MAX_FEE_PCT = 0.05     
-GST_RATE = 0.18            # standard India GST rate, used to detect GST-inclusive vs exclusive amount mismatches
-GST_TOLERANCE = 0.01       # 1% wiggle room around the exact GST math (rounding differences)
+MAX_FEE_PCT = 0.05          # gateway fees assumed to be within 0-5% of gross amount
+MAX_TIMING_OFFSET_DAYS = 7  # settlement can legitimately lag ledger by up to a week
+FUZZY_REF_THRESHOLD = 90    # rapidfuzz similarity score (0-100) to treat two ref ids as "the same, likely a typo"
+
+GST_RATE = 0.18             # standard India GST rate, used to strip GST-inclusive ledger amounts
+GST_TOLERANCE = 0.01        # 1% wiggle room around the exact GST math (rounding differences)
 
 # Fixed exchange rates to INR, used only to VALIDATE cross-currency records are
-# reasonably close after conversion -- not a live FX feed.
+# reasonably close after conversion -- not a live FX feed. In a real system
+# this would call a rates API; here it's intentionally simple and inspectable.
 FX_TO_INR = {
     "INR": 1.0,
     "USD": 83.0,
     "EUR": 90.0,
     "GBP": 105.0,
-}   # gateway fees assumed to be within 0-5% of gross amount
-MAX_TIMING_OFFSET_DAYS = 7  # settlement can legitimately lag ledger by up to a week
-FUZZY_REF_THRESHOLD = 90   # rapidfuzz similarity score (0-100) to treat two ref ids as "the same, likely a typo"
+}
 
 
 @dataclass
 class MatchResult:
     txn_ref: str
     status: str            # "MATCHED" or "EXCEPTION"
-    match_type: Optional[str] = None     # exact / fee_adjusted / timing_offset
+    match_type: Optional[str] = None     # exact / fee_adjusted / timing_offset / fuzzy_ref_match
     exception_reason: Optional[str] = None
     ledger_amount: Optional[float] = None
     settlement_amount: Optional[float] = None
@@ -64,12 +74,17 @@ def load_data(settlement_path: str, ledger_path: str):
     validate_data(settlement, ledger)
     settlement["settle_date"] = pd.to_datetime(settlement["settle_date"], errors="raise")
     ledger["order_date"] = pd.to_datetime(ledger["order_date"], errors="raise")
+
+    # Backward-compatible currency/GST support: older datasets won't have
+    # these columns at all. Default to INR / GST-exclusive so existing
+    # behavior is completely unchanged when the columns are absent.
     if "currency" not in settlement.columns:
         settlement["currency"] = "INR"
     if "currency" not in ledger.columns:
         ledger["currency"] = "INR"
     if "gst_inclusive" not in ledger.columns:
         ledger["gst_inclusive"] = False
+
     return settlement, ledger
 
 
@@ -94,6 +109,23 @@ def validate_data(settlement: pd.DataFrame, ledger: pd.DataFrame) -> None:
         date_column = "settle_date" if name == "settlement" else "order_date"
         if pd.to_datetime(frame[date_column], errors="coerce").isna().any():
             raise ValueError(f"{name} file contains an invalid date in {date_column}")
+
+
+def normalize_to_inr(amount: float, currency: str) -> Optional[float]:
+    """Convert an amount to INR using a fixed reference rate table.
+    Returns None if the currency isn't recognized (treated as its own exception)."""
+    rate = FX_TO_INR.get(str(currency).upper())
+    if rate is None:
+        return None
+    return round(amount * rate, 2)
+
+
+def strip_gst(ledger_amount: float, gst_inclusive: bool) -> float:
+    """If the ledger records a GST-inclusive amount, back out the GST portion
+    so it's comparable to the (GST-exclusive) settlement amount from the gateway."""
+    if gst_inclusive:
+        return round(ledger_amount / (1 + GST_RATE), 2)
+    return ledger_amount
 
 
 def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResult]:
@@ -209,8 +241,39 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
         ledger_row = ledger_by_ref[ref]
         settle_row = settlement_by_ref[ref][0]
 
-        ledger_amt = float(ledger_row["expected_amount"])
-        settle_amt = float(settle_row["paid_amount"])
+        ledger_currency = str(ledger_row.get("currency", "INR"))
+        settle_currency = str(settle_row.get("currency", "INR"))
+        gst_inclusive = bool(ledger_row.get("gst_inclusive", False))
+
+        raw_ledger_amt = float(ledger_row["expected_amount"])
+        raw_settle_amt = float(settle_row["paid_amount"])
+
+        # Step A: strip GST from the ledger side if it's stored GST-inclusive,
+        # so both sides are compared on the same (pre-tax) basis.
+        ledger_amt_pretax = strip_gst(raw_ledger_amt, gst_inclusive)
+
+        # Step B: normalize both sides to INR for comparison if currencies differ.
+        if ledger_currency.upper() != settle_currency.upper():
+            ledger_amt_inr = normalize_to_inr(ledger_amt_pretax, ledger_currency)
+            settle_amt_inr = normalize_to_inr(raw_settle_amt, settle_currency)
+            if ledger_amt_inr is None or settle_amt_inr is None:
+                unknown_ccy = ledger_currency if ledger_amt_inr is None else settle_currency
+                results.append(MatchResult(
+                    txn_ref=ref, status="EXCEPTION", exception_reason="unknown_currency",
+                    ledger_amount=raw_ledger_amt, settlement_amount=raw_settle_amt,
+                    detail=f"Currency '{unknown_ccy}' is not in the supported conversion table "
+                           f"({', '.join(FX_TO_INR.keys())}). Cannot safely compare amounts."
+                ))
+                continue
+            ledger_amt, settle_amt = ledger_amt_inr, settle_amt_inr
+            currency_note = (f" (converted from {ledger_currency}->INR and {settle_currency}->INR "
+                              f"using reference rates for comparison)")
+        else:
+            ledger_amt, settle_amt = ledger_amt_pretax, raw_settle_amt
+            currency_note = "" if ledger_currency.upper() == "INR" else f" (both sides in {ledger_currency})"
+
+        gst_note = " (GST stripped from ledger amount before comparison)" if gst_inclusive else ""
+
         ledger_date = ledger_row["order_date"]
         settle_date = settle_row["settle_date"]
 
@@ -222,8 +285,8 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
         if abs(amt_diff) < 0.01 and date_diff_days == 0:
             results.append(MatchResult(
                 txn_ref=ref, status="MATCHED", match_type="exact",
-                ledger_amount=ledger_amt, settlement_amount=settle_amt,
-                detail="Amount and date match exactly."
+                ledger_amount=raw_ledger_amt, settlement_amount=raw_settle_amt,
+                detail=f"Amount and date match exactly.{currency_note}{gst_note}"
             ))
             continue
 
@@ -231,9 +294,9 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
         if 0 <= amt_diff_pct <= MAX_FEE_PCT and date_diff_days == 0:
             results.append(MatchResult(
                 txn_ref=ref, status="MATCHED", match_type="fee_adjusted",
-                ledger_amount=ledger_amt, settlement_amount=settle_amt,
+                ledger_amount=raw_ledger_amt, settlement_amount=raw_settle_amt,
                 detail=f"Settlement is {amt_diff_pct*100:.2f}% below ledger amount "
-                       f"(₹{amt_diff:.2f}), consistent with a gateway fee deduction."
+                       f"(₹{amt_diff:.2f}), consistent with a gateway fee deduction.{currency_note}{gst_note}"
             ))
             continue
 
@@ -241,9 +304,9 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
         if abs(amt_diff) < 0.01 and 0 < date_diff_days <= MAX_TIMING_OFFSET_DAYS:
             results.append(MatchResult(
                 txn_ref=ref, status="MATCHED", match_type="timing_offset",
-                ledger_amount=ledger_amt, settlement_amount=settle_amt,
+                ledger_amount=raw_ledger_amt, settlement_amount=raw_settle_amt,
                 detail=f"Amount matches exactly; settlement lagged ledger by {date_diff_days} day(s), "
-                       f"within the normal settlement window."
+                       f"within the normal settlement window.{currency_note}{gst_note}"
             ))
             continue
 
@@ -252,12 +315,14 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
             reason = "settlement_exceeds_ledger"
             detail = (f"Settlement amount (₹{settle_amt:.2f}) is ₹{-amt_diff:.2f} HIGHER than the "
                       f"ledger amount (₹{ledger_amt:.2f}) -- gateway paid more than the merchant's "
-                      f"books expected. Possible refund reversal, correction credit, or duplicate top-up.")
+                      f"books expected. Possible refund reversal, correction credit, or duplicate top-up."
+                      f"{currency_note}{gst_note}")
         elif amt_diff_pct > MAX_FEE_PCT:
             reason = "partial_payment"
             detail = (f"Settlement amount (₹{settle_amt:.2f}) is ₹{amt_diff:.2f} "
                       f"({amt_diff_pct*100:.1f}%) below the ledger amount (₹{ledger_amt:.2f}) -- "
-                      f"too large to be a normal gateway fee. Likely a partial payment or refund.")
+                      f"too large to be a normal gateway fee. Likely a partial payment or refund."
+                      f"{currency_note}{gst_note}")
         elif date_diff_days > MAX_TIMING_OFFSET_DAYS:
             reason = "excessive_settlement_delay"
             detail = (f"Settlement date is {date_diff_days} days after the ledger order date, "
@@ -265,11 +330,11 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
         else:
             reason = "unexplained_mismatch"
             detail = (f"Amount differs by ₹{amt_diff:.2f} ({amt_diff_pct*100:.1f}%) and date differs "
-                      f"by {date_diff_days} day(s) -- doesn't fit a known pattern.")
+                      f"by {date_diff_days} day(s) -- doesn't fit a known pattern.{currency_note}{gst_note}")
 
         results.append(MatchResult(
             txn_ref=ref, status="EXCEPTION", exception_reason=reason,
-            ledger_amount=ledger_amt, settlement_amount=settle_amt,
+            ledger_amount=raw_ledger_amt, settlement_amount=raw_settle_amt,
             detail=detail
         ))
 
