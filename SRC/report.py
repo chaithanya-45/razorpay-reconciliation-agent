@@ -3,7 +3,8 @@ report.py
 ---------
 Runs the reconciliation engine and produces the final deliverable:
   1. output/reconciliation_report.csv  -> full audit trail, one row per transaction ref,
-     showing status, match type / exception reason, amounts, and a human-readable detail.
+     showing status, match type / exception reason, amounts, severity, recommended
+     action, and a human-readable detail.
   2. output/summary.txt                -> the headline numbers: match rate, exception
      breakdown, and throughput -- exactly what "the bar" asks for.
 
@@ -39,19 +40,30 @@ def generate_report(settlement_path, ledger_path, output_dir):
         writer = csv.writer(f)
         writer.writerow([
             "txn_ref", "status", "match_type", "exception_reason",
-            "ledger_amount", "settlement_amount", "detail"
+            "ledger_amount", "settlement_amount", "severity", "recommended_action", "detail"
         ])
         for r in results:
             writer.writerow([
                 r.txn_ref, r.status, r.match_type or "", r.exception_reason or "",
                 r.ledger_amount if r.ledger_amount is not None else "",
                 r.settlement_amount if r.settlement_amount is not None else "",
+                r.severity or "",
+                r.recommended_action or "",
                 r.detail
             ])
 
     # --- 2. Summary ---
     match_type_counts = Counter(r.match_type for r in matched)
     exception_reason_counts = Counter(r.exception_reason for r in exceptions)
+    severity_counts = Counter(r.severity for r in exceptions)
+
+    # Total money at stake across all exceptions -- a real business number,
+    # not just a record count. Uses whichever amount is available per record.
+    total_exception_amount = 0.0
+    for r in exceptions:
+        amt = r.ledger_amount if r.ledger_amount is not None else r.settlement_amount
+        if amt is not None:
+            total_exception_amount += abs(amt)
 
     summary_lines = []
     summary_lines.append("RECONCILIATION SUMMARY")
@@ -59,6 +71,7 @@ def generate_report(settlement_path, ledger_path, output_dir):
     summary_lines.append(f"Total records processed : {len(results)}")
     summary_lines.append(f"Matched                 : {len(matched)} ({match_rate:.1f}%)")
     summary_lines.append(f"Exceptions              : {len(exceptions)} ({100-match_rate:.1f}%)")
+    summary_lines.append(f"Total amount at stake in exceptions : Rs. {total_exception_amount:,.2f}")
     summary_lines.append("")
     summary_lines.append("Match type breakdown:")
     for match_type, count in match_type_counts.most_common():
@@ -68,7 +81,12 @@ def generate_report(settlement_path, ledger_path, output_dir):
     for reason, count in exception_reason_counts.most_common():
         summary_lines.append(f"  {reason:<25} {count}")
     summary_lines.append("")
-    summary_lines.append("Full per-record audit trail saved to: reconciliation_report.csv")
+    summary_lines.append("Exception severity breakdown (business urgency, not just a technical count):")
+    for severity in ("HIGH", "MEDIUM", "LOW"):
+        if severity in severity_counts:
+            summary_lines.append(f"  {severity:<10} {severity_counts[severity]}")
+    summary_lines.append("")
+    summary_lines.append("Full per-record audit trail (including recommended actions) saved to: reconciliation_report.csv")
 
     summary_text = "\n".join(summary_lines)
     summary_path = os.path.join(output_dir, "summary.txt")

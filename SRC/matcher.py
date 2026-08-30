@@ -66,6 +66,100 @@ class MatchResult:
     ledger_amount: Optional[float] = None
     settlement_amount: Optional[float] = None
     detail: str = ""
+    severity: Optional[str] = None            # HIGH / MEDIUM / LOW -- how urgent this exception is
+    recommended_action: Optional[str] = None  # a concrete next step for a finance user
+
+
+# Business rules for how urgent an exception is and what a finance user
+# should actually do about it. Keeping this as a lookup table (rather than
+# scattering severity logic through every branch of reconcile()) makes it
+# easy to see and adjust the business judgment calls in one place.
+EXCEPTION_ACTIONS = {
+    "duplicate_settlement": {
+        "action": "Verify which settlement entry is genuine before reconciling; "
+                   "do not release funds twice. Escalate to the payment gateway if unclear.",
+        "base_severity": "HIGH",  # risk of double-paying, always urgent regardless of amount
+    },
+    "missing_settlement": {
+        "action": "Follow up with the payment gateway on why this settlement never arrived; "
+                   "check for a failed payout or a data feed gap.",
+        "base_severity": "MEDIUM",
+    },
+    "missing_ledger_entry": {
+        "action": "Confirm this sale was recorded correctly in the merchant's books; "
+                   "may indicate a booking-system sync issue rather than a payment issue.",
+        "base_severity": "MEDIUM",
+    },
+    "partial_payment": {
+        "action": "Confirm with the gateway whether this was an intentional partial "
+                   "settlement (e.g. a dispute hold) or an error requiring a follow-up payment.",
+        "base_severity": "MEDIUM",
+    },
+    "settlement_exceeds_ledger": {
+        "action": "Investigate the source of the extra funds -- could be a refund reversal, "
+                   "a correction credit, or a gateway error. Do not assume it's a bonus.",
+        "base_severity": "MEDIUM",
+    },
+    "excessive_settlement_delay": {
+        "action": "Usually resolves on its own; flag for follow-up only if it exceeds the "
+                   "gateway's stated maximum settlement window.",
+        "base_severity": "LOW",
+    },
+    "unknown_currency": {
+        "action": "Add this currency to the supported conversion table, or confirm it's not "
+                   "a data entry error, before this can be reconciled automatically.",
+        "base_severity": "MEDIUM",
+    },
+    "fuzzy_ref_amount_mismatch": {
+        "action": "Manually confirm whether the two references really refer to the same "
+                   "transaction before treating this as resolved.",
+        "base_severity": "MEDIUM",
+    },
+    "unexplained_mismatch": {
+        "action": "Needs manual review -- doesn't fit any recognized pattern.",
+        "base_severity": "MEDIUM",
+    },
+}
+
+
+def _amount_at_stake(result: "MatchResult") -> float:
+    for amt in (result.ledger_amount, result.settlement_amount):
+        if amt is not None:
+            return abs(amt)
+    return 0.0
+
+
+def enrich_with_severity_and_action(results: list) -> list:
+    """Adds a business-facing severity level and recommended next action to
+    every exception. Matches are left as-is (severity=None) since they don't
+    need a business decision -- only exceptions do.
+
+    Severity combines the exception TYPE's inherent risk (e.g. a duplicate is
+    always risky, regardless of amount) with the AMOUNT at stake (a ₹50
+    partial payment matters less than a ₹5,00,000 one).
+    """
+    for r in results:
+        if r.status != "EXCEPTION":
+            continue
+        rule = EXCEPTION_ACTIONS.get(r.exception_reason, {
+            "action": "Needs manual review.",
+            "base_severity": "MEDIUM",
+        })
+        amount = _amount_at_stake(r)
+
+        # Escalate severity if a large amount is involved, regardless of type
+        if amount >= 100000:
+            severity = "HIGH"
+        elif amount >= 10000:
+            # don't downgrade an already-HIGH-risk type (like duplicates) to MEDIUM
+            severity = "HIGH" if rule["base_severity"] == "HIGH" else "MEDIUM"
+        else:
+            severity = rule["base_severity"]
+
+        r.severity = severity
+        r.recommended_action = rule["action"]
+
+    return results
 
 
 def load_data(settlement_path: str, ledger_path: str):
@@ -338,7 +432,7 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
             detail=detail
         ))
 
-    return results
+    return enrich_with_severity_and_action(results)
 
 
 if __name__ == "__main__":
