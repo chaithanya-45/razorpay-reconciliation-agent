@@ -31,7 +31,18 @@ from typing import Optional
 from rapidfuzz import fuzz
 
 
-MAX_FEE_PCT = 0.05        # gateway fees assumed to be within 0-5% of gross amount
+MAX_FEE_PCT = 0.05     
+GST_RATE = 0.18            # standard India GST rate, used to detect GST-inclusive vs exclusive amount mismatches
+GST_TOLERANCE = 0.01       # 1% wiggle room around the exact GST math (rounding differences)
+
+# Fixed exchange rates to INR, used only to VALIDATE cross-currency records are
+# reasonably close after conversion -- not a live FX feed.
+FX_TO_INR = {
+    "INR": 1.0,
+    "USD": 83.0,
+    "EUR": 90.0,
+    "GBP": 105.0,
+}   # gateway fees assumed to be within 0-5% of gross amount
 MAX_TIMING_OFFSET_DAYS = 7  # settlement can legitimately lag ledger by up to a week
 FUZZY_REF_THRESHOLD = 90   # rapidfuzz similarity score (0-100) to treat two ref ids as "the same, likely a typo"
 
@@ -53,6 +64,12 @@ def load_data(settlement_path: str, ledger_path: str):
     validate_data(settlement, ledger)
     settlement["settle_date"] = pd.to_datetime(settlement["settle_date"], errors="raise")
     ledger["order_date"] = pd.to_datetime(ledger["order_date"], errors="raise")
+    if "currency" not in settlement.columns:
+        settlement["currency"] = "INR"
+    if "currency" not in ledger.columns:
+        ledger["currency"] = "INR"
+    if "gst_inclusive" not in ledger.columns:
+        ledger["gst_inclusive"] = False
     return settlement, ledger
 
 
