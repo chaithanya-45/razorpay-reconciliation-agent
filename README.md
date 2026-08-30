@@ -2,7 +2,7 @@
 
 Built for the **Razorpay Buildathon**, Track 04: *AI Finance Controller*.
 
-**Live dashboard:** [Open the reconciliation dashboard](https://chaithanya-45.github.io/razorpay-reconciliation-agent/output/dashboard.html)
+**Live dashboard:** [Open the reconciliation dashboard](https://chaithanya-45.github.io/razorpay-reconciliation-agent/dashboard.html)
 ## What this does
 
 Matches payment gateway settlement records against a merchant's internal ledger, automatically resolving as many transactions as possible and clearly explaining every one it can't. Built to answer a real, documented problem: merchants often can't tell why a settlement doesn't match what their books expected, with no transparent breakdown of fees, delays, or discrepancies from the gateway side.
