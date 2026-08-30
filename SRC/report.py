@@ -19,20 +19,34 @@ sys.path.insert(0, os.path.dirname(__file__))
 import csv
 from collections import Counter
 from matcher import load_data, reconcile
+from recon_logger import get_logger, timed_stage
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "output")
 
+log = get_logger()
+
 
 def generate_report(settlement_path, ledger_path, output_dir):
     os.makedirs(output_dir, exist_ok=True)
+    log.info("reconciliation_run_started", settlement_path=settlement_path,
+              ledger_path=ledger_path, output_dir=output_dir)
 
-    settlement, ledger = load_data(settlement_path, ledger_path)
-    results = reconcile(settlement, ledger)
+    with timed_stage(log, "load_and_validate", settlement_path=settlement_path, ledger_path=ledger_path):
+        settlement, ledger = load_data(settlement_path, ledger_path)
+    log.info("data_loaded", ledger_rows=len(ledger), settlement_rows=len(settlement))
+
+    with timed_stage(log, "reconcile", ledger_rows=len(ledger), settlement_rows=len(settlement)):
+        results = reconcile(settlement, ledger)
 
     matched = [r for r in results if r.status == "MATCHED"]
     exceptions = [r for r in results if r.status == "EXCEPTION"]
     match_rate = len(matched) / len(results) * 100 if results else 0
+
+    exception_pct = 100 - match_rate
+    if exception_pct > 40:
+        log.warning("high_exception_rate", exception_pct=round(exception_pct, 1),
+                    total_records=len(results))
 
     # --- 1. Full audit trail CSV ---
     report_path = os.path.join(output_dir, "reconciliation_report.csv")
@@ -40,13 +54,14 @@ def generate_report(settlement_path, ledger_path, output_dir):
         writer = csv.writer(f)
         writer.writerow([
             "txn_ref", "status", "match_type", "exception_reason",
-            "ledger_amount", "settlement_amount", "severity", "recommended_action", "detail"
+            "ledger_amount", "settlement_amount", "confidence", "severity", "recommended_action", "detail"
         ])
         for r in results:
             writer.writerow([
                 r.txn_ref, r.status, r.match_type or "", r.exception_reason or "",
                 r.ledger_amount if r.ledger_amount is not None else "",
                 r.settlement_amount if r.settlement_amount is not None else "",
+                r.confidence if r.confidence is not None else "",
                 r.severity or "",
                 r.recommended_action or "",
                 r.detail
@@ -96,6 +111,11 @@ def generate_report(settlement_path, ledger_path, output_dir):
     print(summary_text)
     print(f"\nFull report written to: {report_path}")
     print(f"Summary written to:     {summary_path}")
+
+    log.info("reconciliation_run_completed", total_records=len(results),
+              matched=len(matched), exceptions=len(exceptions),
+              match_rate_pct=round(match_rate, 1),
+              total_exception_amount=round(total_exception_amount, 2))
 
     return results, match_rate
 

@@ -1,221 +1,221 @@
-txn_ref,status,match_type,exception_reason,ledger_amount,settlement_amount,severity,recommended_action,detail
-TXN1000,MATCHED,fee_adjusted,,9663.52,9470.25,,,"Settlement is 2.00% below ledger amount (₹193.27), consistent with a gateway fee deduction."
-TXN1001,MATCHED,exact,,3824.4,3824.4,,,Amount and date match exactly.
-TXN1002,MATCHED,exact,,10215.15,10215.15,,,Amount and date match exactly.
-TXN1003,EXCEPTION,,duplicate_settlement,6444.44,6444.44,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
-TXN1004,MATCHED,exact,,3643.38,3643.38,,,Amount and date match exactly.
-TXN1005,MATCHED,exact,,3142.8,3142.8,,,Amount and date match exactly.
-TXN1006,MATCHED,exact,,6408.89,6408.89,,,Amount and date match exactly.
-TXN1007,MATCHED,exact,,12179.57,12179.57,,,Amount and date match exactly.
-TXN1008,MATCHED,fee_adjusted,,10532.46,10290.21,,,"Settlement is 2.30% below ledger amount (₹242.25), consistent with a gateway fee deduction."
-TXN1009,MATCHED,fee_adjusted,,3386.64,3308.75,,,"Settlement is 2.30% below ledger amount (₹77.89), consistent with a gateway fee deduction."
-TXN1010,MATCHED,exact,,5822.92,5822.92,,,Amount and date match exactly.
-TXN1011,EXCEPTION,,duplicate_settlement,9135.15,9135.15,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
-TXN1012,MATCHED,exact,,8136.18,8136.18,,,Amount and date match exactly.
-TXN1013,EXCEPTION,,duplicate_settlement,4539.04,4539.04,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
-TXN1014,MATCHED,fee_adjusted,,8744.81,8526.19,,,"Settlement is 2.50% below ledger amount (₹218.62), consistent with a gateway fee deduction."
-TXN1015,MATCHED,timing_offset,,9986.7,9986.7,,,"Amount matches exactly; settlement lagged ledger by 2 day(s), within the normal settlement window."
-TXN1016,MATCHED,fuzzy_ref_match,,13023.96,13023.96,,,"No exact settlement ref found, but 'TXN1016 ' is a 100% textual match to ledger ref 'TXN1016' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
-TXN1017,MATCHED,exact,,9608.13,9608.13,,,Amount and date match exactly.
-TXN1018,MATCHED,fuzzy_ref_match,,5458.01,5458.01,,,"No exact settlement ref found, but 'txn1018' is a 100% textual match to ledger ref 'TXN1018' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
-TXN1019,MATCHED,timing_offset,,14062.49,14062.49,,,"Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window."
-TXN1020,MATCHED,timing_offset,,9597.68,9597.68,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
-TXN1021,MATCHED,timing_offset,,2618.36,2618.36,,,"Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window."
-TXN1022,MATCHED,exact,,10384.8,10384.8,,,Amount and date match exactly.
-TXN1023,MATCHED,exact,,12674.21,12674.21,,,Amount and date match exactly.
-TXN1024,MATCHED,exact,,12114.68,12114.68,,,Amount and date match exactly.
-TXN1025,EXCEPTION,,missing_settlement,3322.55,,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
-TXN1026,EXCEPTION,,partial_payment,4857.23,2931.58,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹2931.58) is ₹1925.65 (39.6%) below the ledger amount (₹4857.23) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1027,MATCHED,exact,,13293.31,13293.31,,,Amount and date match exactly.
-TXN1028,MATCHED,fee_adjusted,,4120.23,4037.83,,,"Settlement is 2.00% below ledger amount (₹82.40), consistent with a gateway fee deduction."
-TXN1029,EXCEPTION,,partial_payment,8176.86,4165.05,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹4165.05) is ₹4011.81 (49.1%) below the ledger amount (₹8176.86) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1030,EXCEPTION,,missing_ledger_entry,,13487.78,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
-TXN1031,MATCHED,exact,,14960.42,14960.42,,,Amount and date match exactly.
-TXN1032,EXCEPTION,,duplicate_settlement,1545.46,1545.46,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
-TXN1033,MATCHED,fee_adjusted,,2462.05,2412.81,,,"Settlement is 2.00% below ledger amount (₹49.24), consistent with a gateway fee deduction."
-TXN1034,MATCHED,exact,,6447.97,6447.97,,,Amount and date match exactly.
-TXN1035,MATCHED,exact,,9019.15,9019.15,,,Amount and date match exactly.
-TXN1036,MATCHED,fee_adjusted,,14571.96,14280.52,,,"Settlement is 2.00% below ledger amount (₹291.44), consistent with a gateway fee deduction."
-TXN1037,MATCHED,exact,,1895.37,1895.37,,,Amount and date match exactly.
-TXN1038,MATCHED,fuzzy_ref_match,,11575.26,11575.26,,,"No exact settlement ref found, but 'TXN1038 ' is a 100% textual match to ledger ref 'TXN1038' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
-TXN1039,MATCHED,exact,,6634.53,6634.53,,,Amount and date match exactly.
-TXN1040,MATCHED,timing_offset,,13162.62,13162.62,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
-TXN1041,MATCHED,exact,,7713.69,7713.69,,,Amount and date match exactly.
-TXN1042,MATCHED,exact,,4616.98,4616.98,,,Amount and date match exactly.
-TXN1043,MATCHED,exact,,3143.88,3143.88,,,Amount and date match exactly.
-TXN1044,MATCHED,timing_offset,,8182.81,8182.81,,,"Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window."
-TXN1045,EXCEPTION,,missing_settlement,9064.38,,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
-TXN1046,MATCHED,exact,,13950.66,13950.66,,,Amount and date match exactly.
-TXN1047,EXCEPTION,,missing_ledger_entry,,3764.9,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
-TXN1048,MATCHED,exact,,1467.67,1467.67,,,Amount and date match exactly.
-TXN1049,EXCEPTION,,missing_ledger_entry,,14674.17,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
-TXN1050,MATCHED,exact,,2100.19,2100.19,,,Amount and date match exactly.
-TXN1051,MATCHED,exact,,2643.88,2643.88,,,Amount and date match exactly.
-TXN1052,MATCHED,exact,,6462.44,6462.44,,,Amount and date match exactly.
-TXN1053,MATCHED,timing_offset,,11377.92,11377.92,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
-TXN1054,MATCHED,timing_offset,,4813.4,4813.4,,,"Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window."
-TXN1055,EXCEPTION,,missing_ledger_entry,,6683.88,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
-TXN1056,MATCHED,exact,,3869.0,3869.0,,,Amount and date match exactly.
-TXN1057,MATCHED,timing_offset,,8906.97,8906.97,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
-TXN1058,EXCEPTION,,missing_settlement,306.42,,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
-TXN1059,MATCHED,fee_adjusted,,3588.34,3516.57,,,"Settlement is 2.00% below ledger amount (₹71.77), consistent with a gateway fee deduction."
-TXN1060,MATCHED,exact,,1248.69,1248.69,,,Amount and date match exactly.
-TXN1061,MATCHED,timing_offset,,7384.13,7384.13,,,"Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window."
-TXN1062,MATCHED,exact,,14045.61,14045.61,,,Amount and date match exactly.
-TXN1063,MATCHED,timing_offset,,3796.36,3796.36,,,"Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window."
-TXN1064,EXCEPTION,,partial_payment,3018.07,2250.31,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹2250.31) is ₹767.76 (25.4%) below the ledger amount (₹3018.07) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1065,MATCHED,exact,,5443.6,5443.6,,,Amount and date match exactly.
-TXN1066,MATCHED,exact,,1001.73,1001.73,,,Amount and date match exactly.
-TXN1067,MATCHED,timing_offset,,1097.07,1097.07,,,"Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window."
-TXN1068,MATCHED,exact,,3880.11,3880.11,,,Amount and date match exactly.
-TXN1069,MATCHED,fee_adjusted,,2274.7,2229.21,,,"Settlement is 2.00% below ledger amount (₹45.49), consistent with a gateway fee deduction."
-TXN1070,EXCEPTION,,missing_ledger_entry,,3897.14,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
-TXN1071,MATCHED,exact,,1649.05,1649.05,,,Amount and date match exactly.
-TXN1072,EXCEPTION,,missing_settlement,14541.14,,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
-TXN1073,MATCHED,exact,,7387.49,7387.49,,,Amount and date match exactly.
-TXN1074,EXCEPTION,,duplicate_settlement,13556.15,13556.15,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
-TXN1075,EXCEPTION,,missing_settlement,14782.57,,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
-TXN1076,MATCHED,timing_offset,,4421.69,4421.69,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
-TXN1077,EXCEPTION,,missing_settlement,14932.26,,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
-TXN1078,MATCHED,timing_offset,,7402.74,7402.74,,,"Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window."
-TXN1079,MATCHED,exact,,14536.9,14536.9,,,Amount and date match exactly.
-TXN1080,MATCHED,fee_adjusted,,1102.17,1076.82,,,"Settlement is 2.30% below ledger amount (₹25.35), consistent with a gateway fee deduction."
-TXN1081,MATCHED,exact,,8845.83,8845.83,,,Amount and date match exactly.
-TXN1082,MATCHED,fee_adjusted,,2530.0,2466.75,,,"Settlement is 2.50% below ledger amount (₹63.25), consistent with a gateway fee deduction."
-TXN1083,MATCHED,exact,,1214.12,1214.12,,,Amount and date match exactly.
-TXN1084,MATCHED,fee_adjusted,,6175.88,6021.48,,,"Settlement is 2.50% below ledger amount (₹154.40), consistent with a gateway fee deduction."
-TXN1085,MATCHED,exact,,8998.88,8998.88,,,Amount and date match exactly.
-TXN1086,MATCHED,exact,,9929.12,9929.12,,,Amount and date match exactly.
-TXN1087,EXCEPTION,,partial_payment,14033.65,10857.83,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹10857.83) is ₹3175.82 (22.6%) below the ledger amount (₹14033.65) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1088,MATCHED,exact,,4849.92,4849.92,,,Amount and date match exactly.
-TXN1089,MATCHED,fee_adjusted,,10141.02,9907.78,,,"Settlement is 2.30% below ledger amount (₹233.24), consistent with a gateway fee deduction."
-TXN1090,MATCHED,fee_adjusted,,13949.47,13670.48,,,"Settlement is 2.00% below ledger amount (₹278.99), consistent with a gateway fee deduction."
-TXN1091,MATCHED,exact,,9393.16,9393.16,,,Amount and date match exactly.
-TXN1092,EXCEPTION,,missing_settlement,8156.99,,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
-TXN1093,MATCHED,exact,,14012.24,14012.24,,,Amount and date match exactly.
-TXN1094,MATCHED,exact,,5669.0,5669.0,,,Amount and date match exactly.
-TXN1095,MATCHED,exact,,10612.39,10612.39,,,Amount and date match exactly.
-TXN1096,MATCHED,exact,,8028.32,8028.32,,,Amount and date match exactly.
-TXN1097,MATCHED,timing_offset,,4630.81,4630.81,,,"Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window."
-TXN1098,MATCHED,exact,,4114.1,4114.1,,,Amount and date match exactly.
-TXN1099,MATCHED,exact,,2500.63,2500.63,,,Amount and date match exactly.
-TXN1100,MATCHED,fee_adjusted,,10820.66,10604.25,,,"Settlement is 2.00% below ledger amount (₹216.41), consistent with a gateway fee deduction."
-TXN1101,MATCHED,fee_adjusted,,12823.11,12502.53,,,"Settlement is 2.50% below ledger amount (₹320.58), consistent with a gateway fee deduction."
-TXN1102,MATCHED,fuzzy_ref_match,,13598.98,13598.98,,,"No exact settlement ref found, but 'txn1102' is a 100% textual match to ledger ref 'TXN1102' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
-TXN1103,MATCHED,exact,,6468.92,6468.92,,,Amount and date match exactly.
-TXN1104,MATCHED,fee_adjusted,,5136.64,5033.91,,,"Settlement is 2.00% below ledger amount (₹102.73), consistent with a gateway fee deduction."
-TXN1105,MATCHED,exact,,2591.41,2591.41,,,Amount and date match exactly.
-TXN1106,MATCHED,timing_offset,,6529.77,6529.77,,,"Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window."
-TXN1107,MATCHED,exact,,14186.75,14186.75,,,Amount and date match exactly.
-TXN1108,MATCHED,exact,,8274.74,8274.74,,,Amount and date match exactly.
-TXN1109,MATCHED,timing_offset,,2391.79,2391.79,,,"Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window."
-TXN1110,MATCHED,fee_adjusted,,5596.84,5484.9,,,"Settlement is 2.00% below ledger amount (₹111.94), consistent with a gateway fee deduction."
-TXN1111,MATCHED,exact,,3309.13,3309.13,,,Amount and date match exactly.
-TXN1112,EXCEPTION,,partial_payment,5434.44,3994.26,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹3994.26) is ₹1440.18 (26.5%) below the ledger amount (₹5434.44) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1113,MATCHED,timing_offset,,14612.79,14612.79,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
-TXN1114,MATCHED,exact,,12996.16,12996.16,,,Amount and date match exactly.
-TXN1115,MATCHED,timing_offset,,566.84,566.84,,,"Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window."
-TXN1116,MATCHED,exact,,11779.32,11779.32,,,Amount and date match exactly.
-TXN1117,MATCHED,exact,,12988.15,12988.15,,,Amount and date match exactly.
-TXN1118,MATCHED,exact,,11853.14,11853.14,,,Amount and date match exactly.
-TXN1119,MATCHED,exact,,12907.18,12907.18,,,Amount and date match exactly.
-TXN1120,EXCEPTION,,partial_payment,5374.94,3110.04,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹3110.04) is ₹2264.90 (42.1%) below the ledger amount (₹5374.94) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1121,MATCHED,exact,,9968.49,9968.49,,,Amount and date match exactly.
-TXN1122,EXCEPTION,,partial_payment,12992.42,7714.07,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹7714.07) is ₹5278.35 (40.6%) below the ledger amount (₹12992.42) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1123,EXCEPTION,,missing_ledger_entry,,7739.2,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
-TXN1124,MATCHED,exact,,5101.02,5101.02,,,Amount and date match exactly.
-TXN1125,EXCEPTION,,partial_payment,2842.8,1515.14,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹1515.14) is ₹1327.66 (46.7%) below the ledger amount (₹2842.80) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1126,MATCHED,fee_adjusted,,9029.25,8821.58,,,"Settlement is 2.30% below ledger amount (₹207.67), consistent with a gateway fee deduction."
-TXN1127,MATCHED,exact,,6658.63,6658.63,,,Amount and date match exactly.
-TXN1128,MATCHED,exact,,13512.67,13512.67,,,Amount and date match exactly.
-TXN1129,MATCHED,exact,,10690.02,10690.02,,,Amount and date match exactly.
-TXN1130,MATCHED,exact,,10365.49,10365.49,,,Amount and date match exactly.
-TXN1131,MATCHED,exact,,3116.12,3116.12,,,Amount and date match exactly.
-TXN1132,MATCHED,exact,,13827.41,13827.41,,,Amount and date match exactly.
-TXN1133,MATCHED,timing_offset,,12750.63,12750.63,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
-TXN1134,EXCEPTION,,missing_settlement,7705.41,,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
-TXN1135,MATCHED,exact,,6155.53,6155.53,,,Amount and date match exactly.
-TXN1136,EXCEPTION,,duplicate_settlement,3039.23,3039.23,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
-TXN1137,EXCEPTION,,missing_ledger_entry,,10224.31,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
-TXN1138,MATCHED,fee_adjusted,,4654.06,4537.71,,,"Settlement is 2.50% below ledger amount (₹116.35), consistent with a gateway fee deduction."
-TXN1139,MATCHED,exact,,4697.35,4697.35,,,Amount and date match exactly.
-TXN1140,MATCHED,exact,,9178.59,9178.59,,,Amount and date match exactly.
-TXN1141,EXCEPTION,,duplicate_settlement,6743.97,6743.97,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
-TXN1142,MATCHED,timing_offset,,11947.28,11947.28,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
-TXN1143,MATCHED,fee_adjusted,,1454.97,1418.6,,,"Settlement is 2.50% below ledger amount (₹36.37), consistent with a gateway fee deduction."
-TXN1144,MATCHED,fuzzy_ref_match,,9365.06,9365.06,,,"No exact settlement ref found, but 'TXN1144 ' is a 100% textual match to ledger ref 'TXN1144' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
-TXN1145,MATCHED,exact,,10157.38,10157.38,,,Amount and date match exactly.
-TXN1146,EXCEPTION,,partial_payment,2380.84,1780.49,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹1780.49) is ₹600.35 (25.2%) below the ledger amount (₹2380.84) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1147,MATCHED,fuzzy_ref_match,,9246.85,9246.85,,,"No exact settlement ref found, but 'TXN-1147' is a 93% textual match to ledger ref 'TXN1147' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
-TXN1148,MATCHED,exact,,13314.83,13314.83,,,Amount and date match exactly.
-TXN1149,MATCHED,fee_adjusted,,10506.04,10264.4,,,"Settlement is 2.30% below ledger amount (₹241.64), consistent with a gateway fee deduction."
-TXN1150,EXCEPTION,,missing_settlement,2384.06,,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
-TXN1151,MATCHED,exact,,11720.62,11720.62,,,Amount and date match exactly.
-TXN1152,EXCEPTION,,missing_settlement,7865.77,,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
-TXN1153,MATCHED,exact,,13778.56,13778.56,,,Amount and date match exactly.
-TXN1154,MATCHED,exact,,12060.97,12060.97,,,Amount and date match exactly.
-TXN1155,MATCHED,exact,,9012.69,9012.69,,,Amount and date match exactly.
-TXN1156,MATCHED,exact,,13401.9,13401.9,,,Amount and date match exactly.
-TXN1157,MATCHED,exact,,6799.52,6799.52,,,Amount and date match exactly.
-TXN1158,MATCHED,exact,,6861.03,6861.03,,,Amount and date match exactly.
-TXN1159,MATCHED,exact,,4304.21,4304.21,,,Amount and date match exactly.
-TXN1160,MATCHED,exact,,3740.84,3740.84,,,Amount and date match exactly.
-TXN1161,MATCHED,fuzzy_ref_match,,4428.78,4428.78,,,"No exact settlement ref found, but 'txn1161' is a 100% textual match to ledger ref 'TXN1161' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
-TXN1162,MATCHED,fuzzy_ref_match,,13416.8,13416.8,,,"No exact settlement ref found, but 'TXN-1162' is a 93% textual match to ledger ref 'TXN1162' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
-TXN1163,EXCEPTION,,partial_payment,3622.67,2004.02,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹2004.02) is ₹1618.65 (44.7%) below the ledger amount (₹3622.67) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1164,MATCHED,exact,,3366.5,3366.5,,,Amount and date match exactly.
-TXN1165,MATCHED,exact,,8230.64,8230.64,,,Amount and date match exactly.
-TXN1166,MATCHED,exact,,12526.79,12526.79,,,Amount and date match exactly.
-TXN1167,MATCHED,exact,,14201.72,14201.72,,,Amount and date match exactly.
-TXN1168,MATCHED,fee_adjusted,,5829.64,5713.05,,,"Settlement is 2.00% below ledger amount (₹116.59), consistent with a gateway fee deduction."
-TXN1169,MATCHED,exact,,4619.47,4619.47,,,Amount and date match exactly.
-TXN1170,MATCHED,fee_adjusted,,8165.66,7961.52,,,"Settlement is 2.50% below ledger amount (₹204.14), consistent with a gateway fee deduction."
-TXN1171,MATCHED,exact,,13487.61,13487.61,,,Amount and date match exactly.
-TXN1172,MATCHED,exact,,6650.37,6650.37,,,Amount and date match exactly.
-TXN1173,MATCHED,fuzzy_ref_match,,10099.33,10099.33,,,"No exact settlement ref found, but 'TXN1173 ' is a 100% textual match to ledger ref 'TXN1173' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
-TXN1174,MATCHED,exact,,12639.48,12639.48,,,Amount and date match exactly.
-TXN1175,MATCHED,fee_adjusted,,599.1,585.32,,,"Settlement is 2.30% below ledger amount (₹13.78), consistent with a gateway fee deduction."
-TXN1176,EXCEPTION,,missing_ledger_entry,,10012.4,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
-TXN1177,EXCEPTION,,partial_payment,2208.35,921.9,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹921.90) is ₹1286.45 (58.3%) below the ledger amount (₹2208.35) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1178,EXCEPTION,,duplicate_settlement,4050.31,4050.31,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
-TXN1179,MATCHED,exact,,5037.32,5037.32,,,Amount and date match exactly.
-TXN1180,MATCHED,exact,,3933.62,3933.62,,,Amount and date match exactly.
-TXN1181,EXCEPTION,,duplicate_settlement,11285.56,11285.56,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
-TXN1182,MATCHED,exact,,3518.49,3518.49,,,Amount and date match exactly.
-TXN1183,MATCHED,fuzzy_ref_match,,795.82,795.82,,,"No exact settlement ref found, but 'TXN-1183' is a 93% textual match to ledger ref 'TXN1183' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
-TXN1184,MATCHED,exact,,3150.54,3150.54,,,Amount and date match exactly.
-TXN1185,EXCEPTION,,missing_ledger_entry,,3730.47,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
-TXN1186,MATCHED,fee_adjusted,,8546.75,8375.81,,,"Settlement is 2.00% below ledger amount (₹170.94), consistent with a gateway fee deduction."
-TXN1187,MATCHED,fee_adjusted,,3992.41,3900.58,,,"Settlement is 2.30% below ledger amount (₹91.83), consistent with a gateway fee deduction."
-TXN1188,MATCHED,fee_adjusted,,9187.26,8957.58,,,"Settlement is 2.50% below ledger amount (₹229.68), consistent with a gateway fee deduction."
-TXN1189,EXCEPTION,,missing_ledger_entry,,11711.32,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
-TXN1190,EXCEPTION,,missing_ledger_entry,,1799.86,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
-TXN1191,MATCHED,exact,,8721.79,8721.79,,,Amount and date match exactly.
-TXN1192,EXCEPTION,,partial_payment,3135.28,1847.28,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹1847.28) is ₹1288.00 (41.1%) below the ledger amount (₹3135.28) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1193,MATCHED,exact,,3794.17,3794.17,,,Amount and date match exactly.
-TXN1194,EXCEPTION,,missing_settlement,12784.34,,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
-TXN1195,EXCEPTION,,missing_ledger_entry,,11984.16,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
-TXN1196,MATCHED,timing_offset,,5338.62,5338.62,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
-TXN1197,MATCHED,exact,,1220.56,1220.56,,,Amount and date match exactly.
-TXN1198,MATCHED,exact,,12773.72,12773.72,,,Amount and date match exactly.
-TXN1199,MATCHED,fee_adjusted,,14419.66,14059.17,,,"Settlement is 2.50% below ledger amount (₹360.49), consistent with a gateway fee deduction."
-TXN1200,MATCHED,fee_adjusted,,10668.17,10422.8,,,"Settlement is 2.30% below ledger amount (₹245.37), consistent with a gateway fee deduction."
-TXN1201,MATCHED,exact,,7921.85,7921.85,,,Amount and date match exactly.
-TXN1202,MATCHED,timing_offset,,12161.35,12161.35,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
-TXN1203,EXCEPTION,,partial_payment,7080.13,5631.29,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹5631.29) is ₹1448.84 (20.5%) below the ledger amount (₹7080.13) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1204,MATCHED,timing_offset,,4970.11,4970.11,,,"Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window."
-TXN1205,MATCHED,exact,,4328.14,4328.14,,,Amount and date match exactly.
-TXN1206,MATCHED,exact,,8633.77,8633.77,,,Amount and date match exactly.
-TXN1207,MATCHED,exact,,624.76,624.76,,,Amount and date match exactly.
-TXN1208,MATCHED,exact,,3339.37,3339.37,,,Amount and date match exactly.
-TXN1209,EXCEPTION,,duplicate_settlement,13228.74,13228.74,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
-TXN1210,MATCHED,exact,,8425.71,8425.71,,,Amount and date match exactly.
-TXN1211,EXCEPTION,,partial_payment,1467.07,877.5,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹877.50) is ₹589.57 (40.2%) below the ledger amount (₹1467.07) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1212,MATCHED,exact,,8416.61,8416.61,,,Amount and date match exactly.
-TXN1213,EXCEPTION,,missing_settlement,9759.36,,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
-TXN1214,EXCEPTION,,partial_payment,1577.19,654.23,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹654.23) is ₹922.96 (58.5%) below the ledger amount (₹1577.19) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1215,MATCHED,exact,,3800.92,3800.92,,,Amount and date match exactly.
-TXN1216,EXCEPTION,,partial_payment,7204.26,4329.16,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹4329.16) is ₹2875.10 (39.9%) below the ledger amount (₹7204.26) -- too large to be a normal gateway fee. Likely a partial payment or refund.
-TXN1217,MATCHED,exact,,14950.15,14950.15,,,Amount and date match exactly.
-TXN1218,MATCHED,exact,,10602.25,10602.25,,,Amount and date match exactly.
-TXN1219,MATCHED,timing_offset,,3611.96,3611.96,,,"Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window."
+txn_ref,status,match_type,exception_reason,ledger_amount,settlement_amount,confidence,severity,recommended_action,detail
+TXN1000,MATCHED,fee_adjusted,,9663.52,9470.25,95,,,"Settlement is 2.00% below ledger amount (₹193.27), consistent with a gateway fee deduction."
+TXN1001,MATCHED,exact,,3824.4,3824.4,100,,,Amount and date match exactly.
+TXN1002,MATCHED,exact,,10215.15,10215.15,100,,,Amount and date match exactly.
+TXN1003,EXCEPTION,,duplicate_settlement,6444.44,6444.44,95,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
+TXN1004,MATCHED,exact,,3643.38,3643.38,100,,,Amount and date match exactly.
+TXN1005,MATCHED,exact,,3142.8,3142.8,100,,,Amount and date match exactly.
+TXN1006,MATCHED,exact,,6408.89,6408.89,100,,,Amount and date match exactly.
+TXN1007,MATCHED,exact,,12179.57,12179.57,100,,,Amount and date match exactly.
+TXN1008,MATCHED,fee_adjusted,,10532.46,10290.21,95,,,"Settlement is 2.30% below ledger amount (₹242.25), consistent with a gateway fee deduction."
+TXN1009,MATCHED,fee_adjusted,,3386.64,3308.75,95,,,"Settlement is 2.30% below ledger amount (₹77.89), consistent with a gateway fee deduction."
+TXN1010,MATCHED,exact,,5822.92,5822.92,100,,,Amount and date match exactly.
+TXN1011,EXCEPTION,,duplicate_settlement,9135.15,9135.15,95,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
+TXN1012,MATCHED,exact,,8136.18,8136.18,100,,,Amount and date match exactly.
+TXN1013,EXCEPTION,,duplicate_settlement,4539.04,4539.04,95,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
+TXN1014,MATCHED,fee_adjusted,,8744.81,8526.19,95,,,"Settlement is 2.50% below ledger amount (₹218.62), consistent with a gateway fee deduction."
+TXN1015,MATCHED,timing_offset,,9986.7,9986.7,90,,,"Amount matches exactly; settlement lagged ledger by 2 day(s), within the normal settlement window."
+TXN1016,MATCHED,fuzzy_ref_match,,13023.96,13023.96,85,,,"No exact settlement ref found, but 'TXN1016 ' is a 100% textual match to ledger ref 'TXN1016' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
+TXN1017,MATCHED,exact,,9608.13,9608.13,100,,,Amount and date match exactly.
+TXN1018,MATCHED,fuzzy_ref_match,,5458.01,5458.01,85,,,"No exact settlement ref found, but 'txn1018' is a 100% textual match to ledger ref 'TXN1018' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
+TXN1019,MATCHED,timing_offset,,14062.49,14062.49,90,,,"Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window."
+TXN1020,MATCHED,timing_offset,,9597.68,9597.68,90,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
+TXN1021,MATCHED,timing_offset,,2618.36,2618.36,90,,,"Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window."
+TXN1022,MATCHED,exact,,10384.8,10384.8,100,,,Amount and date match exactly.
+TXN1023,MATCHED,exact,,12674.21,12674.21,100,,,Amount and date match exactly.
+TXN1024,MATCHED,exact,,12114.68,12114.68,100,,,Amount and date match exactly.
+TXN1025,EXCEPTION,,missing_settlement,3322.55,,90,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
+TXN1026,EXCEPTION,,partial_payment,4857.23,2931.58,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹2931.58) is ₹1925.65 (39.6%) below the ledger amount (₹4857.23) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1027,MATCHED,exact,,13293.31,13293.31,100,,,Amount and date match exactly.
+TXN1028,MATCHED,fee_adjusted,,4120.23,4037.83,95,,,"Settlement is 2.00% below ledger amount (₹82.40), consistent with a gateway fee deduction."
+TXN1029,EXCEPTION,,partial_payment,8176.86,4165.05,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹4165.05) is ₹4011.81 (49.1%) below the ledger amount (₹8176.86) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1030,EXCEPTION,,missing_ledger_entry,,13487.78,90,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
+TXN1031,MATCHED,exact,,14960.42,14960.42,100,,,Amount and date match exactly.
+TXN1032,EXCEPTION,,duplicate_settlement,1545.46,1545.46,95,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
+TXN1033,MATCHED,fee_adjusted,,2462.05,2412.81,95,,,"Settlement is 2.00% below ledger amount (₹49.24), consistent with a gateway fee deduction."
+TXN1034,MATCHED,exact,,6447.97,6447.97,100,,,Amount and date match exactly.
+TXN1035,MATCHED,exact,,9019.15,9019.15,100,,,Amount and date match exactly.
+TXN1036,MATCHED,fee_adjusted,,14571.96,14280.52,95,,,"Settlement is 2.00% below ledger amount (₹291.44), consistent with a gateway fee deduction."
+TXN1037,MATCHED,exact,,1895.37,1895.37,100,,,Amount and date match exactly.
+TXN1038,MATCHED,fuzzy_ref_match,,11575.26,11575.26,85,,,"No exact settlement ref found, but 'TXN1038 ' is a 100% textual match to ledger ref 'TXN1038' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
+TXN1039,MATCHED,exact,,6634.53,6634.53,100,,,Amount and date match exactly.
+TXN1040,MATCHED,timing_offset,,13162.62,13162.62,90,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
+TXN1041,MATCHED,exact,,7713.69,7713.69,100,,,Amount and date match exactly.
+TXN1042,MATCHED,exact,,4616.98,4616.98,100,,,Amount and date match exactly.
+TXN1043,MATCHED,exact,,3143.88,3143.88,100,,,Amount and date match exactly.
+TXN1044,MATCHED,timing_offset,,8182.81,8182.81,90,,,"Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window."
+TXN1045,EXCEPTION,,missing_settlement,9064.38,,90,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
+TXN1046,MATCHED,exact,,13950.66,13950.66,100,,,Amount and date match exactly.
+TXN1047,EXCEPTION,,missing_ledger_entry,,3764.9,90,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
+TXN1048,MATCHED,exact,,1467.67,1467.67,100,,,Amount and date match exactly.
+TXN1049,EXCEPTION,,missing_ledger_entry,,14674.17,90,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
+TXN1050,MATCHED,exact,,2100.19,2100.19,100,,,Amount and date match exactly.
+TXN1051,MATCHED,exact,,2643.88,2643.88,100,,,Amount and date match exactly.
+TXN1052,MATCHED,exact,,6462.44,6462.44,100,,,Amount and date match exactly.
+TXN1053,MATCHED,timing_offset,,11377.92,11377.92,90,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
+TXN1054,MATCHED,timing_offset,,4813.4,4813.4,90,,,"Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window."
+TXN1055,EXCEPTION,,missing_ledger_entry,,6683.88,90,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
+TXN1056,MATCHED,exact,,3869.0,3869.0,100,,,Amount and date match exactly.
+TXN1057,MATCHED,timing_offset,,8906.97,8906.97,90,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
+TXN1058,EXCEPTION,,missing_settlement,306.42,,90,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
+TXN1059,MATCHED,fee_adjusted,,3588.34,3516.57,95,,,"Settlement is 2.00% below ledger amount (₹71.77), consistent with a gateway fee deduction."
+TXN1060,MATCHED,exact,,1248.69,1248.69,100,,,Amount and date match exactly.
+TXN1061,MATCHED,timing_offset,,7384.13,7384.13,90,,,"Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window."
+TXN1062,MATCHED,exact,,14045.61,14045.61,100,,,Amount and date match exactly.
+TXN1063,MATCHED,timing_offset,,3796.36,3796.36,90,,,"Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window."
+TXN1064,EXCEPTION,,partial_payment,3018.07,2250.31,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹2250.31) is ₹767.76 (25.4%) below the ledger amount (₹3018.07) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1065,MATCHED,exact,,5443.6,5443.6,100,,,Amount and date match exactly.
+TXN1066,MATCHED,exact,,1001.73,1001.73,100,,,Amount and date match exactly.
+TXN1067,MATCHED,timing_offset,,1097.07,1097.07,90,,,"Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window."
+TXN1068,MATCHED,exact,,3880.11,3880.11,100,,,Amount and date match exactly.
+TXN1069,MATCHED,fee_adjusted,,2274.7,2229.21,95,,,"Settlement is 2.00% below ledger amount (₹45.49), consistent with a gateway fee deduction."
+TXN1070,EXCEPTION,,missing_ledger_entry,,3897.14,90,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
+TXN1071,MATCHED,exact,,1649.05,1649.05,100,,,Amount and date match exactly.
+TXN1072,EXCEPTION,,missing_settlement,14541.14,,90,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
+TXN1073,MATCHED,exact,,7387.49,7387.49,100,,,Amount and date match exactly.
+TXN1074,EXCEPTION,,duplicate_settlement,13556.15,13556.15,95,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
+TXN1075,EXCEPTION,,missing_settlement,14782.57,,90,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
+TXN1076,MATCHED,timing_offset,,4421.69,4421.69,90,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
+TXN1077,EXCEPTION,,missing_settlement,14932.26,,90,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
+TXN1078,MATCHED,timing_offset,,7402.74,7402.74,90,,,"Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window."
+TXN1079,MATCHED,exact,,14536.9,14536.9,100,,,Amount and date match exactly.
+TXN1080,MATCHED,fee_adjusted,,1102.17,1076.82,95,,,"Settlement is 2.30% below ledger amount (₹25.35), consistent with a gateway fee deduction."
+TXN1081,MATCHED,exact,,8845.83,8845.83,100,,,Amount and date match exactly.
+TXN1082,MATCHED,fee_adjusted,,2530.0,2466.75,95,,,"Settlement is 2.50% below ledger amount (₹63.25), consistent with a gateway fee deduction."
+TXN1083,MATCHED,exact,,1214.12,1214.12,100,,,Amount and date match exactly.
+TXN1084,MATCHED,fee_adjusted,,6175.88,6021.48,95,,,"Settlement is 2.50% below ledger amount (₹154.40), consistent with a gateway fee deduction."
+TXN1085,MATCHED,exact,,8998.88,8998.88,100,,,Amount and date match exactly.
+TXN1086,MATCHED,exact,,9929.12,9929.12,100,,,Amount and date match exactly.
+TXN1087,EXCEPTION,,partial_payment,14033.65,10857.83,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹10857.83) is ₹3175.82 (22.6%) below the ledger amount (₹14033.65) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1088,MATCHED,exact,,4849.92,4849.92,100,,,Amount and date match exactly.
+TXN1089,MATCHED,fee_adjusted,,10141.02,9907.78,95,,,"Settlement is 2.30% below ledger amount (₹233.24), consistent with a gateway fee deduction."
+TXN1090,MATCHED,fee_adjusted,,13949.47,13670.48,95,,,"Settlement is 2.00% below ledger amount (₹278.99), consistent with a gateway fee deduction."
+TXN1091,MATCHED,exact,,9393.16,9393.16,100,,,Amount and date match exactly.
+TXN1092,EXCEPTION,,missing_settlement,8156.99,,90,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
+TXN1093,MATCHED,exact,,14012.24,14012.24,100,,,Amount and date match exactly.
+TXN1094,MATCHED,exact,,5669.0,5669.0,100,,,Amount and date match exactly.
+TXN1095,MATCHED,exact,,10612.39,10612.39,100,,,Amount and date match exactly.
+TXN1096,MATCHED,exact,,8028.32,8028.32,100,,,Amount and date match exactly.
+TXN1097,MATCHED,timing_offset,,4630.81,4630.81,90,,,"Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window."
+TXN1098,MATCHED,exact,,4114.1,4114.1,100,,,Amount and date match exactly.
+TXN1099,MATCHED,exact,,2500.63,2500.63,100,,,Amount and date match exactly.
+TXN1100,MATCHED,fee_adjusted,,10820.66,10604.25,95,,,"Settlement is 2.00% below ledger amount (₹216.41), consistent with a gateway fee deduction."
+TXN1101,MATCHED,fee_adjusted,,12823.11,12502.53,95,,,"Settlement is 2.50% below ledger amount (₹320.58), consistent with a gateway fee deduction."
+TXN1102,MATCHED,fuzzy_ref_match,,13598.98,13598.98,85,,,"No exact settlement ref found, but 'txn1102' is a 100% textual match to ledger ref 'TXN1102' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
+TXN1103,MATCHED,exact,,6468.92,6468.92,100,,,Amount and date match exactly.
+TXN1104,MATCHED,fee_adjusted,,5136.64,5033.91,95,,,"Settlement is 2.00% below ledger amount (₹102.73), consistent with a gateway fee deduction."
+TXN1105,MATCHED,exact,,2591.41,2591.41,100,,,Amount and date match exactly.
+TXN1106,MATCHED,timing_offset,,6529.77,6529.77,90,,,"Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window."
+TXN1107,MATCHED,exact,,14186.75,14186.75,100,,,Amount and date match exactly.
+TXN1108,MATCHED,exact,,8274.74,8274.74,100,,,Amount and date match exactly.
+TXN1109,MATCHED,timing_offset,,2391.79,2391.79,90,,,"Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window."
+TXN1110,MATCHED,fee_adjusted,,5596.84,5484.9,95,,,"Settlement is 2.00% below ledger amount (₹111.94), consistent with a gateway fee deduction."
+TXN1111,MATCHED,exact,,3309.13,3309.13,100,,,Amount and date match exactly.
+TXN1112,EXCEPTION,,partial_payment,5434.44,3994.26,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹3994.26) is ₹1440.18 (26.5%) below the ledger amount (₹5434.44) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1113,MATCHED,timing_offset,,14612.79,14612.79,90,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
+TXN1114,MATCHED,exact,,12996.16,12996.16,100,,,Amount and date match exactly.
+TXN1115,MATCHED,timing_offset,,566.84,566.84,90,,,"Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window."
+TXN1116,MATCHED,exact,,11779.32,11779.32,100,,,Amount and date match exactly.
+TXN1117,MATCHED,exact,,12988.15,12988.15,100,,,Amount and date match exactly.
+TXN1118,MATCHED,exact,,11853.14,11853.14,100,,,Amount and date match exactly.
+TXN1119,MATCHED,exact,,12907.18,12907.18,100,,,Amount and date match exactly.
+TXN1120,EXCEPTION,,partial_payment,5374.94,3110.04,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹3110.04) is ₹2264.90 (42.1%) below the ledger amount (₹5374.94) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1121,MATCHED,exact,,9968.49,9968.49,100,,,Amount and date match exactly.
+TXN1122,EXCEPTION,,partial_payment,12992.42,7714.07,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹7714.07) is ₹5278.35 (40.6%) below the ledger amount (₹12992.42) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1123,EXCEPTION,,missing_ledger_entry,,7739.2,90,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
+TXN1124,MATCHED,exact,,5101.02,5101.02,100,,,Amount and date match exactly.
+TXN1125,EXCEPTION,,partial_payment,2842.8,1515.14,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹1515.14) is ₹1327.66 (46.7%) below the ledger amount (₹2842.80) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1126,MATCHED,fee_adjusted,,9029.25,8821.58,95,,,"Settlement is 2.30% below ledger amount (₹207.67), consistent with a gateway fee deduction."
+TXN1127,MATCHED,exact,,6658.63,6658.63,100,,,Amount and date match exactly.
+TXN1128,MATCHED,exact,,13512.67,13512.67,100,,,Amount and date match exactly.
+TXN1129,MATCHED,exact,,10690.02,10690.02,100,,,Amount and date match exactly.
+TXN1130,MATCHED,exact,,10365.49,10365.49,100,,,Amount and date match exactly.
+TXN1131,MATCHED,exact,,3116.12,3116.12,100,,,Amount and date match exactly.
+TXN1132,MATCHED,exact,,13827.41,13827.41,100,,,Amount and date match exactly.
+TXN1133,MATCHED,timing_offset,,12750.63,12750.63,90,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
+TXN1134,EXCEPTION,,missing_settlement,7705.41,,90,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
+TXN1135,MATCHED,exact,,6155.53,6155.53,100,,,Amount and date match exactly.
+TXN1136,EXCEPTION,,duplicate_settlement,3039.23,3039.23,95,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
+TXN1137,EXCEPTION,,missing_ledger_entry,,10224.31,90,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
+TXN1138,MATCHED,fee_adjusted,,4654.06,4537.71,95,,,"Settlement is 2.50% below ledger amount (₹116.35), consistent with a gateway fee deduction."
+TXN1139,MATCHED,exact,,4697.35,4697.35,100,,,Amount and date match exactly.
+TXN1140,MATCHED,exact,,9178.59,9178.59,100,,,Amount and date match exactly.
+TXN1141,EXCEPTION,,duplicate_settlement,6743.97,6743.97,95,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
+TXN1142,MATCHED,timing_offset,,11947.28,11947.28,90,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
+TXN1143,MATCHED,fee_adjusted,,1454.97,1418.6,95,,,"Settlement is 2.50% below ledger amount (₹36.37), consistent with a gateway fee deduction."
+TXN1144,MATCHED,fuzzy_ref_match,,9365.06,9365.06,85,,,"No exact settlement ref found, but 'TXN1144 ' is a 100% textual match to ledger ref 'TXN1144' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
+TXN1145,MATCHED,exact,,10157.38,10157.38,100,,,Amount and date match exactly.
+TXN1146,EXCEPTION,,partial_payment,2380.84,1780.49,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹1780.49) is ₹600.35 (25.2%) below the ledger amount (₹2380.84) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1147,MATCHED,fuzzy_ref_match,,9246.85,9246.85,85,,,"No exact settlement ref found, but 'TXN-1147' is a 93% textual match to ledger ref 'TXN1147' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
+TXN1148,MATCHED,exact,,13314.83,13314.83,100,,,Amount and date match exactly.
+TXN1149,MATCHED,fee_adjusted,,10506.04,10264.4,95,,,"Settlement is 2.30% below ledger amount (₹241.64), consistent with a gateway fee deduction."
+TXN1150,EXCEPTION,,missing_settlement,2384.06,,90,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
+TXN1151,MATCHED,exact,,11720.62,11720.62,100,,,Amount and date match exactly.
+TXN1152,EXCEPTION,,missing_settlement,7865.77,,90,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
+TXN1153,MATCHED,exact,,13778.56,13778.56,100,,,Amount and date match exactly.
+TXN1154,MATCHED,exact,,12060.97,12060.97,100,,,Amount and date match exactly.
+TXN1155,MATCHED,exact,,9012.69,9012.69,100,,,Amount and date match exactly.
+TXN1156,MATCHED,exact,,13401.9,13401.9,100,,,Amount and date match exactly.
+TXN1157,MATCHED,exact,,6799.52,6799.52,100,,,Amount and date match exactly.
+TXN1158,MATCHED,exact,,6861.03,6861.03,100,,,Amount and date match exactly.
+TXN1159,MATCHED,exact,,4304.21,4304.21,100,,,Amount and date match exactly.
+TXN1160,MATCHED,exact,,3740.84,3740.84,100,,,Amount and date match exactly.
+TXN1161,MATCHED,fuzzy_ref_match,,4428.78,4428.78,85,,,"No exact settlement ref found, but 'txn1161' is a 100% textual match to ledger ref 'TXN1161' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
+TXN1162,MATCHED,fuzzy_ref_match,,13416.8,13416.8,85,,,"No exact settlement ref found, but 'TXN-1162' is a 93% textual match to ledger ref 'TXN1162' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
+TXN1163,EXCEPTION,,partial_payment,3622.67,2004.02,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹2004.02) is ₹1618.65 (44.7%) below the ledger amount (₹3622.67) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1164,MATCHED,exact,,3366.5,3366.5,100,,,Amount and date match exactly.
+TXN1165,MATCHED,exact,,8230.64,8230.64,100,,,Amount and date match exactly.
+TXN1166,MATCHED,exact,,12526.79,12526.79,100,,,Amount and date match exactly.
+TXN1167,MATCHED,exact,,14201.72,14201.72,100,,,Amount and date match exactly.
+TXN1168,MATCHED,fee_adjusted,,5829.64,5713.05,95,,,"Settlement is 2.00% below ledger amount (₹116.59), consistent with a gateway fee deduction."
+TXN1169,MATCHED,exact,,4619.47,4619.47,100,,,Amount and date match exactly.
+TXN1170,MATCHED,fee_adjusted,,8165.66,7961.52,95,,,"Settlement is 2.50% below ledger amount (₹204.14), consistent with a gateway fee deduction."
+TXN1171,MATCHED,exact,,13487.61,13487.61,100,,,Amount and date match exactly.
+TXN1172,MATCHED,exact,,6650.37,6650.37,100,,,Amount and date match exactly.
+TXN1173,MATCHED,fuzzy_ref_match,,10099.33,10099.33,85,,,"No exact settlement ref found, but 'TXN1173 ' is a 100% textual match to ledger ref 'TXN1173' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
+TXN1174,MATCHED,exact,,12639.48,12639.48,100,,,Amount and date match exactly.
+TXN1175,MATCHED,fee_adjusted,,599.1,585.32,95,,,"Settlement is 2.30% below ledger amount (₹13.78), consistent with a gateway fee deduction."
+TXN1176,EXCEPTION,,missing_ledger_entry,,10012.4,90,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
+TXN1177,EXCEPTION,,partial_payment,2208.35,921.9,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹921.90) is ₹1286.45 (58.3%) below the ledger amount (₹2208.35) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1178,EXCEPTION,,duplicate_settlement,4050.31,4050.31,95,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
+TXN1179,MATCHED,exact,,5037.32,5037.32,100,,,Amount and date match exactly.
+TXN1180,MATCHED,exact,,3933.62,3933.62,100,,,Amount and date match exactly.
+TXN1181,EXCEPTION,,duplicate_settlement,11285.56,11285.56,95,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
+TXN1182,MATCHED,exact,,3518.49,3518.49,100,,,Amount and date match exactly.
+TXN1183,MATCHED,fuzzy_ref_match,,795.82,795.82,85,,,"No exact settlement ref found, but 'TXN-1183' is a 93% textual match to ledger ref 'TXN1183' and amounts agree exactly. Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
+TXN1184,MATCHED,exact,,3150.54,3150.54,100,,,Amount and date match exactly.
+TXN1185,EXCEPTION,,missing_ledger_entry,,3730.47,90,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
+TXN1186,MATCHED,fee_adjusted,,8546.75,8375.81,95,,,"Settlement is 2.00% below ledger amount (₹170.94), consistent with a gateway fee deduction."
+TXN1187,MATCHED,fee_adjusted,,3992.41,3900.58,95,,,"Settlement is 2.30% below ledger amount (₹91.83), consistent with a gateway fee deduction."
+TXN1188,MATCHED,fee_adjusted,,9187.26,8957.58,95,,,"Settlement is 2.50% below ledger amount (₹229.68), consistent with a gateway fee deduction."
+TXN1189,EXCEPTION,,missing_ledger_entry,,11711.32,90,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
+TXN1190,EXCEPTION,,missing_ledger_entry,,1799.86,90,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
+TXN1191,MATCHED,exact,,8721.79,8721.79,100,,,Amount and date match exactly.
+TXN1192,EXCEPTION,,partial_payment,3135.28,1847.28,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹1847.28) is ₹1288.00 (41.1%) below the ledger amount (₹3135.28) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1193,MATCHED,exact,,3794.17,3794.17,100,,,Amount and date match exactly.
+TXN1194,EXCEPTION,,missing_settlement,12784.34,,90,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
+TXN1195,EXCEPTION,,missing_ledger_entry,,11984.16,90,MEDIUM,Confirm this sale was recorded correctly in the merchant's books; may indicate a booking-system sync issue rather than a payment issue.,"Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue."
+TXN1196,MATCHED,timing_offset,,5338.62,5338.62,90,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
+TXN1197,MATCHED,exact,,1220.56,1220.56,100,,,Amount and date match exactly.
+TXN1198,MATCHED,exact,,12773.72,12773.72,100,,,Amount and date match exactly.
+TXN1199,MATCHED,fee_adjusted,,14419.66,14059.17,95,,,"Settlement is 2.50% below ledger amount (₹360.49), consistent with a gateway fee deduction."
+TXN1200,MATCHED,fee_adjusted,,10668.17,10422.8,95,,,"Settlement is 2.30% below ledger amount (₹245.37), consistent with a gateway fee deduction."
+TXN1201,MATCHED,exact,,7921.85,7921.85,100,,,Amount and date match exactly.
+TXN1202,MATCHED,timing_offset,,12161.35,12161.35,90,,,"Amount matches exactly; settlement lagged ledger by 5 day(s), within the normal settlement window."
+TXN1203,EXCEPTION,,partial_payment,7080.13,5631.29,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹5631.29) is ₹1448.84 (20.5%) below the ledger amount (₹7080.13) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1204,MATCHED,timing_offset,,4970.11,4970.11,90,,,"Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window."
+TXN1205,MATCHED,exact,,4328.14,4328.14,100,,,Amount and date match exactly.
+TXN1206,MATCHED,exact,,8633.77,8633.77,100,,,Amount and date match exactly.
+TXN1207,MATCHED,exact,,624.76,624.76,100,,,Amount and date match exactly.
+TXN1208,MATCHED,exact,,3339.37,3339.37,100,,,Amount and date match exactly.
+TXN1209,EXCEPTION,,duplicate_settlement,13228.74,13228.74,95,HIGH,Verify which settlement entry is genuine before reconciling; do not release funds twice. Escalate to the payment gateway if unclear.,2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.
+TXN1210,MATCHED,exact,,8425.71,8425.71,100,,,Amount and date match exactly.
+TXN1211,EXCEPTION,,partial_payment,1467.07,877.5,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹877.50) is ₹589.57 (40.2%) below the ledger amount (₹1467.07) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1212,MATCHED,exact,,8416.61,8416.61,100,,,Amount and date match exactly.
+TXN1213,EXCEPTION,,missing_settlement,9759.36,,90,MEDIUM,Follow up with the payment gateway on why this settlement never arrived; check for a failed payout or a data feed gap.,"Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap."
+TXN1214,EXCEPTION,,partial_payment,1577.19,654.23,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹654.23) is ₹922.96 (58.5%) below the ledger amount (₹1577.19) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1215,MATCHED,exact,,3800.92,3800.92,100,,,Amount and date match exactly.
+TXN1216,EXCEPTION,,partial_payment,7204.26,4329.16,85,MEDIUM,Confirm with the gateway whether this was an intentional partial settlement (e.g. a dispute hold) or an error requiring a follow-up payment.,Settlement amount (₹4329.16) is ₹2875.10 (39.9%) below the ledger amount (₹7204.26) -- too large to be a normal gateway fee. Likely a partial payment or refund.
+TXN1217,MATCHED,exact,,14950.15,14950.15,100,,,Amount and date match exactly.
+TXN1218,MATCHED,exact,,10602.25,10602.25,100,,,Amount and date match exactly.
+TXN1219,MATCHED,timing_offset,,3611.96,3611.96,90,,,"Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window."

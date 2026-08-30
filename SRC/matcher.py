@@ -68,6 +68,44 @@ class MatchResult:
     detail: str = ""
     severity: Optional[str] = None            # HIGH / MEDIUM / LOW -- how urgent this exception is
     recommended_action: Optional[str] = None  # a concrete next step for a finance user
+    confidence: Optional[int] = None          # 0-100: how confident the engine is in THIS classification
+
+
+# Confidence reflects how certain the engine is that its classification is
+# correct -- NOT how good the financial outcome is. A MATCH can have high
+# confidence (exact) or a bit less (fuzzy ref, since it's inferring two
+# different-looking strings are the same transaction). An EXCEPTION can also
+# have high confidence (a duplicate is unambiguous) or lower confidence
+# (an unexplained mismatch might just be a pattern we haven't modeled yet).
+MATCH_TYPE_CONFIDENCE = {
+    "exact": 100,
+    "fee_adjusted": 95,
+    "timing_offset": 90,
+    # fuzzy_ref_match confidence is computed per-record from the actual
+    # rapidfuzz similarity score (see _fuzzy_match_confidence below).
+}
+
+EXCEPTION_CONFIDENCE = {
+    "duplicate_settlement": 95,       # unambiguous: literally >1 row for one ref
+    "unknown_currency": 90,           # unambiguous: currency code not in table
+    "missing_settlement": 90,         # unambiguous: no counterpart exists at all
+    "missing_ledger_entry": 90,
+    "settlement_exceeds_ledger": 85,
+    "partial_payment": 85,
+    "excessive_settlement_delay": 85,
+    "fuzzy_ref_amount_mismatch": 70,  # inherently uncertain: is it even the same transaction?
+    "unexplained_mismatch": 60,       # lowest confidence: doesn't fit any modeled pattern
+}
+
+
+def _fuzzy_match_confidence(rapidfuzz_score: float) -> int:
+    """Maps a rapidfuzz similarity score (90-100 range, since that's our
+    FUZZY_REF_THRESHOLD) onto an 80-90 confidence range for the match itself.
+    A 90% textual match -> 80 confidence; a 100% textual match (but still
+    routed through fuzzy logic, e.g. due to whitespace) -> 90 confidence."""
+    clamped = max(FUZZY_REF_THRESHOLD, min(100, rapidfuzz_score))
+    span = 100 - FUZZY_REF_THRESHOLD
+    return int(80 + (clamped - FUZZY_REF_THRESHOLD) / span * 10) if span else 85
 
 
 # Business rules for how urgent an exception is and what a finance user
@@ -131,16 +169,23 @@ def _amount_at_stake(result: "MatchResult") -> float:
 
 def enrich_with_severity_and_action(results: list) -> list:
     """Adds a business-facing severity level and recommended next action to
-    every exception. Matches are left as-is (severity=None) since they don't
-    need a business decision -- only exceptions do.
+    every exception, and a confidence score (0-100) to every result.
 
     Severity combines the exception TYPE's inherent risk (e.g. a duplicate is
     always risky, regardless of amount) with the AMOUNT at stake (a ₹50
     partial payment matters less than a ₹5,00,000 one).
+
+    Confidence reflects how certain the engine is in its OWN classification,
+    separate from severity. A duplicate exception is flagged with high
+    confidence (95) because ">1 settlement row for one ref" is unambiguous.
+    An "unexplained_mismatch" exception gets low confidence (60) because,
+    by definition, it didn't fit any pattern the engine actually understands.
     """
     for r in results:
-        if r.status != "EXCEPTION":
+        if r.status == "MATCHED":
+            r.confidence = MATCH_TYPE_CONFIDENCE.get(r.match_type, 85)
             continue
+
         rule = EXCEPTION_ACTIONS.get(r.exception_reason, {
             "action": "Needs manual review.",
             "base_severity": "MEDIUM",
@@ -158,6 +203,7 @@ def enrich_with_severity_and_action(results: list) -> list:
 
         r.severity = severity
         r.recommended_action = rule["action"]
+        r.confidence = EXCEPTION_CONFIDENCE.get(r.exception_reason, 70)
 
     return results
 
