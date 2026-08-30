@@ -5,3 +5,10 @@
 {"timestamp": "2026-08-30T18:49:13", "level": "INFO", "event": "reconcile_started", "ledger_rows": 208, "settlement_rows": 218}
 {"timestamp": "2026-08-30T18:49:13", "level": "INFO", "event": "reconcile_completed", "elapsed_seconds": 0.029, "ledger_rows": 208, "settlement_rows": 218}
 {"timestamp": "2026-08-30T18:49:13", "level": "INFO", "event": "reconciliation_run_completed", "total_records": 220, "matched": 170, "exceptions": 50, "match_rate_pct": 77.3, "total_exception_amount": 364289.09}
+{"timestamp": "2026-08-30T18:55:32", "level": "INFO", "event": "reconciliation_run_started", "settlement_path": "C:\\AI FINANCE CONTROLLER\\SRC\\..\\data\\settlement.csv", "ledger_path": "C:\\AI FINANCE CONTROLLER\\SRC\\..\\data\\ledger.csv", "output_dir": "C:\\AI FINANCE CONTROLLER\\SRC\\..\\output"}
+{"timestamp": "2026-08-30T18:55:32", "level": "INFO", "event": "load_and_validate_started", "settlement_path": "C:\\AI FINANCE CONTROLLER\\SRC\\..\\data\\settlement.csv", "ledger_path": "C:\\AI FINANCE CONTROLLER\\SRC\\..\\data\\ledger.csv"}
+{"timestamp": "2026-08-30T18:55:32", "level": "INFO", "event": "load_and_validate_completed", "elapsed_seconds": 0.014, "settlement_path": "C:\\AI FINANCE CONTROLLER\\SRC\\..\\data\\settlement.csv", "ledger_path": "C:\\AI FINANCE CONTROLLER\\SRC\\..\\data\\ledger.csv"}
+{"timestamp": "2026-08-30T18:55:32", "level": "INFO", "event": "data_loaded", "ledger_rows": 208, "settlement_rows": 218}
+{"timestamp": "2026-08-30T18:55:32", "level": "INFO", "event": "reconcile_started", "ledger_rows": 208, "settlement_rows": 218}
+{"timestamp": "2026-08-30T18:55:32", "level": "INFO", "event": "reconcile_completed", "elapsed_seconds": 0.047, "ledger_rows": 208, "settlement_rows": 218}
+{"timestamp": "2026-08-30T18:55:32", "level": "INFO", "event": "reconciliation_run_completed", "total_records": 220, "matched": 170, "exceptions": 50, "match_rate_pct": 77.3, "total_exception_amount": 364289.09}
