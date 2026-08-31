@@ -26,9 +26,51 @@ import logging
 import os
 import sys
 import time
+from datetime import date, datetime
 
 
 LOG_PATH = os.path.join(os.path.dirname(__file__), "..", "output", "reconciliation.log")
+
+
+def _json_safe(value):
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, (datetime, date)):
+        return value.isoformat()
+    if hasattr(value, "isoformat") and callable(value.isoformat):
+        try:
+            return value.isoformat()
+        except Exception:
+            pass
+    if isinstance(value, os.PathLike):
+        return str(value)
+    if isinstance(value, dict):
+        return {str(k): _json_safe(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple, set)):
+        return [_json_safe(item) for item in value]
+    if hasattr(value, "to_dict"):
+        try:
+            payload = value.to_dict(orient="records")
+            return _json_safe(payload)
+        except TypeError:
+            try:
+                payload = value.to_dict()
+                return _json_safe(payload)
+            except Exception:
+                pass
+    if hasattr(value, "tolist"):
+        try:
+            return _json_safe(value.tolist())
+        except Exception:
+            pass
+    if hasattr(value, "item") and not isinstance(value, (str, bytes, bytearray)):
+        try:
+            return _json_safe(value.item())
+        except Exception:
+            pass
+    if hasattr(value, "__dict__") and value.__class__.__module__ not in ("builtins", "logging"):
+        return str(value)
+    return str(value)
 
 
 class JsonFormatter(logging.Formatter):
@@ -58,10 +100,11 @@ class StructuredLogger:
         self._logger = logger
 
     def _log(self, level, event, **fields):
+        safe_fields = {k: _json_safe(v) for k, v in fields.items()}
         record = self._logger.makeRecord(
             self._logger.name, level, "(recon)", 0, event, (), None
         )
-        record.extra_fields = fields
+        record.extra_fields = safe_fields
         self._logger.handle(record)
 
     def debug(self, event, **fields):

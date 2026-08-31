@@ -3,7 +3,9 @@ RECONCILIATION SUMMARY
 Total records processed : 220
 Matched                 : 170 (77.3%)
 Exceptions              : 50 (22.7%)
-Total amount at stake in exceptions : Rs. 364,289.09
+Total reconciled value  : Rs. 1,310,435.44
+Total exception value  : Rs. 364,289.09
+Outstanding amount     : Rs. 364,289.09
 
 Match type breakdown:
   exact                105
@@ -12,13 +14,16 @@ Match type breakdown:
   fuzzy_ref_match      10
 
 Exception reason breakdown (the honest part -- what we could NOT resolve):
-  partial_payment           16
-  missing_settlement        12
-  missing_ledger_entry      12
-  duplicate_settlement      10
+  partial_payment           16 | Rs. 85,406.20
+  missing_settlement        12 | Rs. 105,605.25
+  missing_ledger_entry      12 | Rs. 99,709.59
+  duplicate_settlement      10 | Rs. 73,568.05
 
 Exception severity breakdown (business urgency, not just a technical count):
   HIGH       10
   MEDIUM     40
 
-Full per-record audit trail (including recommended actions) saved to: reconciliation_report.csv
+Financial impact summary:
+  Reconciled amount : Rs. 1,310,435.44
+  Exception amount : Rs. 364,289.09
+Full per-record audit trail (including recommended actions and evidence) saved to: reconciliation_report.csv

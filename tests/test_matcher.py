@@ -1,4 +1,6 @@
+import os
 import sys
+import tempfile
 import unittest
 from datetime import datetime
 from pathlib import Path
@@ -8,6 +10,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "SRC"))
 
 from matcher import load_data, reconcile, validate_data
+from report import generate_report
 
 
 class ReconcileTests(unittest.TestCase):
@@ -92,6 +95,50 @@ class ReconcileTests(unittest.TestCase):
         }])
         with self.assertRaisesRegex(ValueError, "non-numeric amount"):
             validate_data(settlement, ledger)
+
+    def test_exact_match_uses_evidence_based_confidence(self):
+        result = self.run_case("TXN-12", 1000, "2026-08-01", "TXN-12", 1000, "2026-08-01")
+        self.assertEqual(result.status, "MATCHED")
+        self.assertEqual(result.confidence, 100)
+        self.assertIsNotNone(result.evidence)
+        self.assertGreaterEqual(result.evidence["reference_similarity"], 95)
+
+    def test_exception_includes_candidate_evidence(self):
+        result = self.run_case("TXN-13", 1000, "2026-08-01", "TXN-13", 700, "2026-08-01")
+        self.assertEqual(result.status, "EXCEPTION")
+        self.assertEqual(result.exception_reason, "partial_payment")
+        self.assertIsNotNone(result.evidence)
+        self.assertIn("amount_gap", result.evidence)
+        self.assertIn("candidate_score", result.evidence)
+
+    def test_ambiguous_match_becomes_review_candidate(self):
+        ledger = pd.DataFrame([{
+            "ledger_ref": "ALPHA-100", "expected_amount": 1000,
+            "order_date": pd.Timestamp("2026-08-01"),
+        }])
+        settlement = pd.DataFrame([
+            {"settlement_ref": "ALPHA-200", "paid_amount": 1000, "settle_date": pd.Timestamp("2026-08-01")},
+            {"settlement_ref": "ALPHA-300", "paid_amount": 1000, "settle_date": pd.Timestamp("2026-08-01")},
+        ])
+        result = reconcile(settlement, ledger)[0]
+        self.assertTrue(result.review_required)
+        self.assertEqual(result.decision_bucket, "REVIEW")
+        self.assertIsNotNone(result.candidate_matches)
+        self.assertGreaterEqual(len(result.candidate_matches), 2)
+
+    def test_generate_report_exports_review_queue(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            ledger = pd.DataFrame([{
+                "ledger_ref": "REVIEW-1", "expected_amount": 1000,
+                "order_date": pd.Timestamp("2026-08-01"),
+            }])
+            settlement = pd.DataFrame([
+                {"settlement_ref": "REVIEW-2", "paid_amount": 1000, "settle_date": pd.Timestamp("2026-08-01")},
+                {"settlement_ref": "REVIEW-3", "paid_amount": 1000, "settle_date": pd.Timestamp("2026-08-01")},
+            ])
+            generate_report(settlement, ledger, tmpdir)
+            review_queue_path = os.path.join(tmpdir, "review_queue.csv")
+            self.assertTrue(os.path.exists(review_queue_path))
 
 
 if __name__ == "__main__":

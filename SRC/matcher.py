@@ -69,6 +69,119 @@ class MatchResult:
     severity: Optional[str] = None            # HIGH / MEDIUM / LOW -- how urgent this exception is
     recommended_action: Optional[str] = None  # a concrete next step for a finance user
     confidence: Optional[int] = None          # 0-100: how confident the engine is in THIS classification
+    evidence: Optional[dict] = None
+    decision_bucket: Optional[str] = None     # AUTO_MATCH / REVIEW / EXCEPTION
+    review_required: bool = False
+    candidate_matches: Optional[list] = None
+
+
+def _reference_similarity(left: str, right: str) -> int:
+    """Return a 0-100 similarity score for two reference strings."""
+    if not left and not right:
+        return 100
+    return int(fuzz.ratio(str(left).strip().upper(), str(right).strip().upper()))
+
+
+def _amount_similarity(expected: float, actual: float) -> float:
+    if expected == 0:
+        return 1.0 if actual == 0 else 0.0
+    diff = abs(expected - actual) / abs(expected)
+    return max(0.0, 1.0 - diff)
+
+
+def _date_similarity(expected: pd.Timestamp, actual: pd.Timestamp) -> float:
+    if pd.isna(expected) or pd.isna(actual):
+        return 0.0
+    diff_days = abs((actual - expected).days)
+    if diff_days == 0:
+        return 1.0
+    if diff_days <= MAX_TIMING_OFFSET_DAYS:
+        return max(0.0, 1.0 - (diff_days / (MAX_TIMING_OFFSET_DAYS + 1)))
+    return 0.0
+
+
+def _fee_consistency(expected: float, actual: float) -> float:
+    if expected == 0:
+        return 1.0 if actual == 0 else 0.0
+    ratio = abs(expected - actual) / abs(expected)
+    if ratio <= MAX_FEE_PCT:
+        return 1.0
+    return max(0.0, 1.0 - (ratio / 0.5))
+
+
+def _candidate_score(reference_similarity: float, amount_similarity: float,
+                    date_similarity: float, fee_consistency: float) -> float:
+    weighted = (
+        0.40 * (reference_similarity / 100.0)
+        + 0.35 * amount_similarity
+        + 0.15 * date_similarity
+        + 0.10 * fee_consistency
+    )
+    return round(weighted * 100, 2)
+
+
+def _build_evidence(reference_text: str, ledger_amount: Optional[float], settlement_amount: Optional[float],
+                   ledger_date: Optional[pd.Timestamp], settlement_date: Optional[pd.Timestamp],
+                   reference_match_text: Optional[str] = None, amount_gap: Optional[float] = None,
+                   fuzzy_score: Optional[int] = None, candidate_matches: Optional[list] = None) -> dict:
+    ref_similarity = 100
+    if reference_match_text is not None:
+        ref_similarity = _reference_similarity(reference_text, reference_match_text)
+    if ledger_amount is None or settlement_amount is None:
+        amount_similarity = 0.0
+        fee_score = 0.0
+        if amount_gap is None:
+            amount_gap = None
+        date_similarity = 0.0
+    else:
+        amount_similarity = _amount_similarity(float(ledger_amount), float(settlement_amount))
+        fee_score = _fee_consistency(float(ledger_amount), float(settlement_amount))
+        if amount_gap is None:
+            amount_gap = round(float(ledger_amount) - float(settlement_amount), 2)
+        date_similarity = _date_similarity(ledger_date, settlement_date) if ledger_date is not None and settlement_date is not None else 0.0
+    candidate_score = _candidate_score(ref_similarity, amount_similarity, date_similarity, fee_score)
+    evidence = {
+        "reference_similarity": ref_similarity,
+        "amount_similarity": round(amount_similarity, 4) if ledger_amount is not None and settlement_amount is not None else 0.0,
+        "date_similarity": round(date_similarity, 4) if ledger_date is not None and settlement_date is not None else 0.0,
+        "fee_consistency": round(fee_score, 4) if ledger_amount is not None and settlement_amount is not None else 0.0,
+        "candidate_score": round(candidate_score, 2),
+        "amount_gap": amount_gap,
+    }
+    if fuzzy_score is not None:
+        evidence["fuzzy_score"] = fuzzy_score
+    if candidate_matches is not None:
+        evidence["candidate_matches"] = candidate_matches
+    return evidence
+
+
+def _candidate_rankings(reference: str, candidate_refs: list[str], ledger_amount: Optional[float],
+                       settlement_rows: dict) -> list[dict]:
+    ranked = []
+    for candidate in candidate_refs:
+        settle_row = settlement_rows.get(candidate)
+        if settle_row is None:
+            continue
+        settle_amt = float(settle_row[0]["paid_amount"])
+        if ledger_amount is None:
+            amount_similarity = 0.0
+            fee_score = 0.0
+            amount_gap = None
+        else:
+            amount_similarity = _amount_similarity(float(ledger_amount), settle_amt)
+            fee_score = _fee_consistency(float(ledger_amount), settle_amt)
+            amount_gap = round(float(ledger_amount) - settle_amt, 2)
+        ref_similarity = _reference_similarity(reference, candidate)
+        date_similarity = _date_similarity(pd.Timestamp(settle_row[0]["settle_date"]), pd.Timestamp(settle_row[0]["settle_date"])) if False else 1.0
+        score = _candidate_score(ref_similarity, amount_similarity, date_similarity, fee_score)
+        ranked.append({
+            "candidate_ref": candidate,
+            "score": round(score, 2),
+            "reference_similarity": ref_similarity,
+            "amount_gap": amount_gap,
+            "fee_consistency": round(fee_score, 4),
+        })
+    return sorted(ranked, key=lambda item: item["score"], reverse=True)[:3]
 
 
 # Confidence reflects how certain the engine is that its classification is
@@ -182,8 +295,22 @@ def enrich_with_severity_and_action(results: list) -> list:
     by definition, it didn't fit any pattern the engine actually understands.
     """
     for r in results:
+        if r.evidence is not None and "candidate_matches" in r.evidence and len(r.evidence["candidate_matches"]) > 1:
+            r.review_required = True
+            r.decision_bucket = "REVIEW"
+        else:
+            r.review_required = False
+            r.decision_bucket = "AUTO_MATCH" if r.status == "MATCHED" else "EXCEPTION"
+
         if r.status == "MATCHED":
-            r.confidence = MATCH_TYPE_CONFIDENCE.get(r.match_type, 85)
+            base_confidence = MATCH_TYPE_CONFIDENCE.get(r.match_type, 85)
+            if r.evidence is not None:
+                candidate_score = float(r.evidence.get("candidate_score", base_confidence))
+                base_confidence = int(round(candidate_score))
+            r.confidence = max(0, min(100, base_confidence))
+            if 70 <= r.confidence < 90 and r.evidence is not None:
+                r.review_required = True
+                r.decision_bucket = "REVIEW"
             continue
 
         rule = EXCEPTION_ACTIONS.get(r.exception_reason, {
@@ -192,18 +319,27 @@ def enrich_with_severity_and_action(results: list) -> list:
         })
         amount = _amount_at_stake(r)
 
-        # Escalate severity if a large amount is involved, regardless of type
         if amount >= 100000:
             severity = "HIGH"
         elif amount >= 10000:
-            # don't downgrade an already-HIGH-risk type (like duplicates) to MEDIUM
             severity = "HIGH" if rule["base_severity"] == "HIGH" else "MEDIUM"
         else:
             severity = rule["base_severity"]
 
         r.severity = severity
         r.recommended_action = rule["action"]
-        r.confidence = EXCEPTION_CONFIDENCE.get(r.exception_reason, 70)
+        base_confidence = EXCEPTION_CONFIDENCE.get(r.exception_reason, 70)
+        if r.evidence is not None:
+            candidate_score = float(r.evidence.get("candidate_score", base_confidence))
+            base_confidence = int(round(candidate_score))
+        r.confidence = max(0, min(100, base_confidence))
+
+        if r.confidence < 70:
+            r.review_required = True
+            r.decision_bucket = "REVIEW"
+        elif r.confidence < 85 and r.exception_reason not in {"duplicate_settlement", "missing_settlement", "missing_ledger_entry"}:
+            r.review_required = True
+            r.decision_bucket = "REVIEW"
 
     return results
 
@@ -281,17 +417,13 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
         settlement_by_ref.setdefault(row["settlement_ref"], []).append(row)
 
     # --- Fuzzy ref-id resolution pass ---
-    # Real-world settlement files and merchant ledgers sometimes use slightly
-    # different formatting for the same reference (extra whitespace, case
-    # differences, a stray character from manual re-entry). Before treating
-    # a ref as "missing" on one side, check for a close fuzzy match on the
-    # other side. If found, we treat them as the SAME transaction but flag
-    # it distinctly so the fuzzy link itself is visible in the audit trail.
-    fuzzy_ref_map = {}  # ledger_ref -> matched settlement_ref (only when NOT an exact match)
+    fuzzy_ref_map = {}
+    candidate_cache = {}
     unmatched_ledger_refs = [r for r in ledger_by_ref if r not in settlement_by_ref]
     unmatched_settlement_refs = [r for r in settlement_by_ref if r not in ledger_by_ref]
 
     for l_ref in unmatched_ledger_refs:
+        ranked_candidates = []
         best_score = 0
         best_match = None
         for s_ref in unmatched_settlement_refs:
@@ -299,8 +431,20 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
             if score > best_score:
                 best_score = score
                 best_match = s_ref
+            if score >= FUZZY_REF_THRESHOLD - 10:
+                ranked_candidates.append({"candidate_ref": s_ref, "score": score})
+        ranked_candidates = sorted(ranked_candidates, key=lambda x: x["score"], reverse=True)[:3]
+        candidate_cache[l_ref] = ranked_candidates
         if best_match and best_score >= FUZZY_REF_THRESHOLD:
             fuzzy_ref_map[l_ref] = (best_match, best_score)
+
+    for s_ref in unmatched_settlement_refs:
+        ranked_candidates = []
+        for l_ref in unmatched_ledger_refs:
+            score = fuzz.ratio(str(l_ref).strip().upper(), str(s_ref).strip().upper())
+            if score >= FUZZY_REF_THRESHOLD - 10:
+                ranked_candidates.append({"candidate_ref": l_ref, "score": score})
+        candidate_cache[s_ref] = sorted(ranked_candidates, key=lambda x: x["score"], reverse=True)[:3]
 
     # Settlement refs that got consumed by a fuzzy match should not ALSO be
     # evaluated on their own in the main loop below (that would double-count
@@ -321,25 +465,51 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
             settle_amt = float(settle_row["paid_amount"])
             amt_diff = round(ledger_amt - settle_amt, 2)
             if abs(amt_diff) < 0.01:
+                evidence = _build_evidence(
+                    ref, ledger_amt, settle_amt, ledger_by_ref[ref]["order_date"],
+                    settlement_by_ref[matched_settlement_ref][0]["settle_date"],
+                    matched_settlement_ref, amount_gap=amt_diff, fuzzy_score=int(score),
+                    candidate_matches=candidate_cache.get(ref, []),
+                )
                 results.append(MatchResult(
                     txn_ref=ref, status="MATCHED", match_type="fuzzy_ref_match",
                     ledger_amount=ledger_amt, settlement_amount=settle_amt,
                     detail=f"No exact settlement ref found, but '{matched_settlement_ref}' is a "
                            f"{score:.0f}% textual match to ledger ref '{ref}' and amounts agree exactly. "
-                           f"Likely a formatting difference (case, whitespace, or a manual re-entry typo)."
+                           f"Likely a formatting difference (case, whitespace, or a manual re-entry typo).",
+                    evidence=evidence,
+                    candidate_matches=candidate_cache.get(ref, []),
                 ))
             else:
+                evidence = _build_evidence(
+                    ref, ledger_amt, settle_amt, ledger_by_ref[ref]["order_date"],
+                    settlement_by_ref[matched_settlement_ref][0]["settle_date"],
+                    matched_settlement_ref, amount_gap=amt_diff, fuzzy_score=int(score),
+                    candidate_matches=candidate_cache.get(ref, []),
+                )
                 results.append(MatchResult(
                     txn_ref=ref, status="EXCEPTION", exception_reason="fuzzy_ref_amount_mismatch",
                     ledger_amount=ledger_amt, settlement_amount=settle_amt,
                     detail=f"Settlement ref '{matched_settlement_ref}' is a {score:.0f}% textual match "
                            f"to ledger ref '{ref}', but amounts differ by ₹{amt_diff:.2f}. "
-                           f"Needs manual confirmation this is really the same transaction."
+                           f"Needs manual confirmation this is really the same transaction.",
+                    evidence=evidence,
+                    candidate_matches=candidate_cache.get(ref, []),
                 ))
             continue
 
         # --- Case: duplicate settlement entries for this ref ---
         if ref in duplicate_refs:
+            evidence = _build_evidence(
+                ref,
+                float(ledger_by_ref[ref]["expected_amount"]) if in_ledger else None,
+                float(settlement_by_ref[ref][0]["paid_amount"]) if in_settlement else None,
+                ledger_by_ref[ref]["order_date"] if in_ledger else None,
+                settlement_by_ref[ref][0]["settle_date"] if in_settlement else None,
+                reference_match_text=ref,
+                amount_gap=(float(ledger_by_ref[ref]["expected_amount"]) - float(settlement_by_ref[ref][0]["paid_amount"])) if in_ledger and in_settlement else None,
+            )
+            evidence["duplicate_count"] = int(settlement_counts[ref])
             results.append(MatchResult(
                 txn_ref=ref,
                 status="EXCEPTION",
@@ -347,12 +517,27 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
                 ledger_amount=float(ledger_by_ref[ref]["expected_amount"]) if in_ledger else None,
                 settlement_amount=float(settlement_by_ref[ref][0]["paid_amount"]) if in_settlement else None,
                 detail=f"{settlement_counts[ref]} settlement entries found for this reference "
-                       f"(expected exactly 1). Needs manual review to determine which is valid."
+                       f"(expected exactly 1). Needs manual review to determine which is valid.",
+                evidence=evidence,
             ))
             continue
 
         # --- Case: missing on one side ---
         if in_ledger and not in_settlement:
+            candidate_matches = candidate_cache.get(ref, [])
+            evidence = _build_evidence(
+                ref,
+                float(ledger_by_ref[ref]["expected_amount"]),
+                None,
+                ledger_by_ref[ref]["order_date"],
+                None,
+                reference_match_text=ref,
+                candidate_matches=candidate_matches or None,
+            )
+            evidence["candidate_count"] = len(candidate_matches)
+            if candidate_matches:
+                evidence["candidate_count"] = len(candidate_matches)
+                evidence["review_reason"] = "close_fuzzy_candidates_exist"
             results.append(MatchResult(
                 txn_ref=ref,
                 status="EXCEPTION",
@@ -360,12 +545,27 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
                 ledger_amount=float(ledger_by_ref[ref]["expected_amount"]),
                 settlement_amount=None,
                 detail="Ledger expects this transaction but no matching settlement was received. "
-                       "Possible payment failure, delayed payout beyond window, or gateway data gap."
+                       "Possible payment failure, delayed payout beyond window, or gateway data gap.",
+                evidence=evidence,
+                candidate_matches=candidate_matches or None,
             ))
             continue
 
         if in_settlement and not in_ledger:
             settle_row = settlement_by_ref[ref][0]
+            candidate_matches = candidate_cache.get(ref, [])
+            evidence = _build_evidence(
+                ref,
+                None,
+                float(settle_row["paid_amount"]),
+                None,
+                settle_row["settle_date"],
+                reference_match_text=ref,
+                candidate_matches=candidate_matches or None,
+            )
+            evidence["candidate_count"] = len(candidate_matches)
+            if candidate_matches:
+                evidence["review_reason"] = "close_fuzzy_candidates_exist"
             results.append(MatchResult(
                 txn_ref=ref,
                 status="EXCEPTION",
@@ -373,7 +573,9 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
                 ledger_amount=None,
                 settlement_amount=float(settle_row["paid_amount"]),
                 detail="Settlement received but no corresponding ledger entry exists. "
-                       "Possible unrecorded sale, or a booking-system sync issue."
+                       "Possible unrecorded sale, or a booking-system sync issue.",
+                evidence=evidence,
+                candidate_matches=candidate_matches or None,
             ))
             continue
 
@@ -423,30 +625,48 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
 
         # Tier 1: EXACT
         if abs(amt_diff) < 0.01 and date_diff_days == 0:
+            evidence = _build_evidence(
+                ref, raw_ledger_amt, raw_settle_amt, ledger_date, settle_date, reference_match_text=ref,
+                amount_gap=amt_diff,
+            )
+            evidence["candidate_count"] = 1
             results.append(MatchResult(
                 txn_ref=ref, status="MATCHED", match_type="exact",
                 ledger_amount=raw_ledger_amt, settlement_amount=raw_settle_amt,
-                detail=f"Amount and date match exactly.{currency_note}{gst_note}"
+                detail=f"Amount and date match exactly.{currency_note}{gst_note}",
+                evidence=evidence,
             ))
             continue
 
         # Tier 2: FEE_ADJUSTED (settlement is slightly less, within plausible fee range)
         if 0 <= amt_diff_pct <= MAX_FEE_PCT and date_diff_days == 0:
+            evidence = _build_evidence(
+                ref, ledger_amt, settle_amt, ledger_date, settle_date, reference_match_text=ref,
+                amount_gap=amt_diff,
+            )
+            evidence["candidate_count"] = 1
             results.append(MatchResult(
                 txn_ref=ref, status="MATCHED", match_type="fee_adjusted",
                 ledger_amount=raw_ledger_amt, settlement_amount=raw_settle_amt,
                 detail=f"Settlement is {amt_diff_pct*100:.2f}% below ledger amount "
-                       f"(₹{amt_diff:.2f}), consistent with a gateway fee deduction.{currency_note}{gst_note}"
+                       f"(₹{amt_diff:.2f}), consistent with a gateway fee deduction.{currency_note}{gst_note}",
+                evidence=evidence,
             ))
             continue
 
         # Tier 3: TIMING_OFFSET (exact amount, settlement date lags)
         if abs(amt_diff) < 0.01 and 0 < date_diff_days <= MAX_TIMING_OFFSET_DAYS:
+            evidence = _build_evidence(
+                ref, ledger_amt, settle_amt, ledger_date, settle_date, reference_match_text=ref,
+                amount_gap=amt_diff,
+            )
+            evidence["candidate_count"] = 1
             results.append(MatchResult(
                 txn_ref=ref, status="MATCHED", match_type="timing_offset",
                 ledger_amount=raw_ledger_amt, settlement_amount=raw_settle_amt,
                 detail=f"Amount matches exactly; settlement lagged ledger by {date_diff_days} day(s), "
-                       f"within the normal settlement window.{currency_note}{gst_note}"
+                       f"within the normal settlement window.{currency_note}{gst_note}",
+                evidence=evidence,
             ))
             continue
 
@@ -472,10 +692,25 @@ def reconcile(settlement: pd.DataFrame, ledger: pd.DataFrame) -> list[MatchResul
             detail = (f"Amount differs by ₹{amt_diff:.2f} ({amt_diff_pct*100:.1f}%) and date differs "
                       f"by {date_diff_days} day(s) -- doesn't fit a known pattern.{currency_note}{gst_note}")
 
+        candidate_matches = []
+        if ref in settlement_by_ref:
+            for candidate in settlement_by_ref.get(ref, []):
+                candidate_matches.append({
+                    "candidate_ref": str(candidate["settlement_ref"]),
+                    "score": 100,
+                    "amount_gap": round(float(ledger_amt) - float(candidate["paid_amount"]), 2),
+                })
+        evidence = _build_evidence(
+            ref, ledger_amt, settle_amt, ledger_date, settle_date, reference_match_text=ref,
+            amount_gap=amt_diff, candidate_matches=candidate_matches or None,
+        )
+        evidence["candidate_count"] = 1
         results.append(MatchResult(
             txn_ref=ref, status="EXCEPTION", exception_reason=reason,
             ledger_amount=raw_ledger_amt, settlement_amount=raw_settle_amt,
-            detail=detail
+            detail=detail,
+            evidence=evidence,
+            candidate_matches=candidate_matches or None,
         ))
 
     return enrich_with_severity_and_action(results)
