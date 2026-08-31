@@ -18,6 +18,8 @@ This system:
 - ✅ **Provides confidence scores** (0-100) for every decision
 - ✅ **Flags severity levels** (HIGH/MEDIUM/LOW) for business prioritization
 - ✅ **Suggests concrete next actions** for each exception
+- ✅ **Creates a human review queue** for ambiguous and unresolved records
+- ✅ **Writes structured JSON logs** for pipeline observability
 - ✅ **Runs transparently** — every decision is explainable, auditable, and logged
 
 ---
@@ -111,12 +113,15 @@ SRC/
   generate_data.py       # synthetic settlement + ledger data generator (batch 1)
   generate_data_test2.py # second, independent unseen test batch
   matcher.py             # core reconciliation engine
-  report.py              # generates the audit trail CSV + summary
+  report.py              # generates audit trail, review queue, and summary
+  recon_logger.py        # structured JSON pipeline logging
 data/
   settlement.csv, ledger.csv, ground_truth.csv           # batch 1
   settlement_test2.csv, ledger_test2.csv, ground_truth_test2.csv  # batch 2
 output/
   reconciliation_report.csv  # full per-record audit trail
+  review_queue.csv            # records requiring human review
+  reconciliation.log          # structured pipeline events
   summary.txt                 # headline match rate + exception breakdown
   dashboard.html               # visual report (open directly in a browser)
 tests/
@@ -148,6 +153,11 @@ To run the automated checks:
 ```bash
 python -m unittest discover -s tests -v
 ```
+
+The generated `review_queue.csv` contains records that need human attention,
+including the recommended action, confidence score, exception reason, and
+ranked candidate evidence where available. The full audit report retains the
+same evidence for every processed record.
 
 To reproduce the independent validation batch:
 
