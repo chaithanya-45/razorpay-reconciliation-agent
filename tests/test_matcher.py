@@ -1,3 +1,4 @@
+import csv
 import os
 import sys
 import tempfile
@@ -11,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "SRC"))
 
 from matcher import load_data, reconcile, validate_data
 from report import generate_report
+from review import merge_decisions, record_decision
 
 
 class ReconcileTests(unittest.TestCase):
@@ -139,6 +141,38 @@ class ReconcileTests(unittest.TestCase):
             generate_report(settlement, ledger, tmpdir)
             review_queue_path = os.path.join(tmpdir, "review_queue.csv")
             self.assertTrue(os.path.exists(review_queue_path))
+
+    def test_review_decision_is_persisted_and_merged(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            queue_path = os.path.join(tmpdir, "review_queue.csv")
+            decision_path = os.path.join(tmpdir, "review_decisions.csv")
+            with open(queue_path, "w", newline="", encoding="utf-8") as handle:
+                handle.write("txn_ref,status\nTXN-REVIEW,EXCEPTION\n")
+
+            record_decision(decision_path, "TXN-REVIEW", "approved", "finance-1", "Verified in gateway portal")
+            merged = merge_decisions(queue_path, decision_path)
+
+            self.assertEqual(merged[0]["review_decision"], "APPROVED")
+            self.assertEqual(merged[0]["reviewer"], "finance-1")
+            self.assertEqual(merged[0]["review_notes"], "Verified in gateway portal")
+
+    def test_review_override_requires_target_status(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with self.assertRaisesRegex(ValueError, "override_status"):
+                record_decision(
+                    os.path.join(tmpdir, "review_decisions.csv"),
+                    "TXN-OVERRIDE", "OVERRIDDEN", "finance-1",
+                )
+
+    def test_review_decision_updates_existing_transaction(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            decision_path = os.path.join(tmpdir, "review_decisions.csv")
+            record_decision(decision_path, "TXN-UPDATE", "rejected", "finance-1")
+            record_decision(decision_path, "TXN-UPDATE", "approved", "finance-2")
+            with open(decision_path, newline="", encoding="utf-8") as handle:
+                rows = list(csv.DictReader(handle))
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]["decision"], "APPROVED")
 
 
 if __name__ == "__main__":

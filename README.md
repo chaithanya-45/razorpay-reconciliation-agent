@@ -115,6 +115,7 @@ SRC/
   matcher.py             # core reconciliation engine
   report.py              # generates audit trail, review queue, and summary
   recon_logger.py        # structured JSON pipeline logging
+  review.py              # records human approve/reject/override decisions
 data/
   settlement.csv, ledger.csv, ground_truth.csv           # batch 1
   settlement_test2.csv, ledger_test2.csv, ground_truth_test2.csv  # batch 2
@@ -158,6 +159,17 @@ The generated `review_queue.csv` contains records that need human attention,
 including the recommended action, confidence score, exception reason, and
 ranked candidate evidence where available. The full audit report retains the
 same evidence for every processed record.
+
+Record a reviewer decision without changing the original engine output:
+
+```bash
+python SRC/review.py --txn-ref TXN1003 --decision approve --reviewer finance-team \
+  --notes "Verified against the gateway settlement portal"
+```
+
+Decisions are stored in `output/review_decisions.csv`. Use `--decision override`
+with `--override-status MATCHED` or `EXCEPTION` when the reviewer determines
+that the engine's original classification should change.
 
 To reproduce the independent validation batch:
 
