@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reconciliation Agent — Enhanced Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+  :root {
+    --ink: #1B2A4A;
+    --ink-light: #2E4270;
+    --paper: #F5F6F3;
+    --paper-card: #FFFFFF;
+    --line: #DCDDD6;
+    --matched: #1D6B3E;
+    --matched-bg: #E4F3EA;
+    --exception: #B4560B;
+    --exception-bg: #FCEEE0;
+    --review: #0056b3;
+    --review-bg: #E7F1FF;
+    --text-secondary: #5B5F6B;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+    padding: 40px 24px 80px;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; }
+  header { margin-bottom: 32px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 30px;
+    margin: 0 0 6px;
+    color: var(--ink);
+  }
+  .subtitle { font-size: 14px; color: var(--text-secondary); }
+  
+  .filter-panel {
+    background: var(--paper-card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .filter-group {
+    margin-bottom: 16px;
+  }
+  .filter-label {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .filter-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+  }
+  input[type="range"] {
+    width: 100%;
+  }
+  .confidence-display {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+  .checkbox-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  input[type="checkbox"] {
+    cursor: pointer;
+  }
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .stat-card {
+    background: var(--paper-card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 16px 18px;
+  }
+  .stat-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-secondary); margin-bottom: 6px; font-family: 'IBM Plex Mono', monospace;
+  }
+  .stat-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 24px; font-weight: 500;
+  }
+  .stat-value.matched { color: var(--matched); }
+  .stat-value.exception { color: var(--exception); }
+  .stat-value.review { color: var(--review); }
+  
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-secondary); margin: 28px 0 12px;
+  }
+  
+  table { width: 100%; border-collapse: collapse; background: var(--paper-card); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  thead th {
+    text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary);
+    padding: 10px 14px; border-bottom: 1px solid var(--line); background: #FAFAF8;
+    cursor: pointer;
+  }
+  thead th:hover { background: #F0F0ED; }
+  tbody td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #FAFAF8; }
+  tbody tr.review-item { background: var(--review-bg); }
+  .ref { font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
+  .amt { font-family: 'IBM Plex Mono', monospace; text-align: right; }
+  .confidence {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+  }
+  .confidence.high { color: var(--matched); }
+  .confidence.medium { color: #F59E0B; }
+  .confidence.low { color: var(--exception); }
+  .status-badge {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500;
+    padding: 3px 8px; border-radius: 4px; display: inline-block;
+  }
+  .status-badge.MATCHED { background: var(--matched-bg); color: var(--matched); }
+  .status-badge.EXCEPTION { background: var(--exception-bg); color: var(--exception); }
+  .review-badge { background: var(--review-bg); color: var(--review); }
+  .detail { color: var(--text-secondary); font-size: 12px; max-width: 340px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">AI Finance Controller — Track 04</div>
+    <h1>Reconciliation Agent: Enhanced Dashboard</h1>
+    <div class="subtitle">Interactive reconciliation analysis with confidence and review queue filters.</div>
+  </header>
+
+  <div class="filter-panel">
+    <div class="filter-controls">
+      <div class="filter-group">
+        <div class="filter-label">Confidence Range</div>
+        <input type="range" id="confMin" min="0" max="100" value="0" step="5">
+        <div class="confidence-display">Min: <span id="confMinVal">0</span>%</div>
+        <input type="range" id="confMax" min="0" max="100" value="100" step="5">
+        <div class="confidence-display">Max: <span id="confMaxVal">100</span>%</div>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Status</div>
+        <div class="checkbox-group">
+          <input type="radio" id="statusAll" name="status" value="ALL" checked>
+          <label for="statusAll">All</label>
+          <input type="radio" id="statusMatched" name="status" value="MATCHED">
+          <label for="statusMatched">Matched</label>
+          <input type="radio" id="statusException" name="status" value="EXCEPTION">
+          <label for="statusException">Exceptions</label>
+        </div>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Review Queue</div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="reviewQueueOnly">
+          <label for="reviewQueueOnly">Show only review items</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-row" id="stats"></div>
+
+  <div class="section-label">Full audit trail (filtered)</div>
+  <table>
+    <thead>
+      <tr>
+        <th onclick="sortTable(0)">Ref</th>
+        <th>Status</th>
+        <th onclick="sortTable(3)">Confidence</th>
+        <th onclick="sortTable(4)">Ledger Amt</th>
+        <th onclick="sortTable(5)">Settlement Amt</th>
+        <th>Detail</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+    </tbody>
+  </table>
+</div>
+
+<script>
+const RECORDS = [{"txn_ref": "TXN21000", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 15659.74, "settlement_amount": 15659.74, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21001", "status": "EXCEPTION", "match_type": "", "exception_reason": "partial_payment", "ledger_amount": 11539.04, "settlement_amount": 3482.74, "confidence": 66, "severity": "MEDIUM", "detail": "Settlement amount (\u20b93482.74) is \u20b98056.30 (69.8%) below the ledger amount (\u20b911539.04) -- too large to be a normal gateway fee. Likely a partial payment or refund.", "is_review_item": true}, {"txn_ref": "TXN21002", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 17582.16, "settlement_amount": 17582.16, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21003", "status": "EXCEPTION", "match_type": "", "exception_reason": "missing_ledger_entry", "ledger_amount": null, "settlement_amount": 16926.03, "confidence": 40, "severity": "MEDIUM", "detail": "Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue.", "is_review_item": true}, {"txn_ref": "TXN21004", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 3110.81, "settlement_amount": 3110.81, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21005", "status": "MATCHED", "match_type": "fee_adjusted", "exception_reason": "", "ledger_amount": 8051.35, "settlement_amount": 7656.83, "confidence": 98, "severity": "", "detail": "Settlement is 4.90% below ledger amount (\u20b9394.52), consistent with a gateway fee deduction.", "is_review_item": false}, {"txn_ref": "TXN21006", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 8136.15, "settlement_amount": 8136.15, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21007", "status": "EXCEPTION", "match_type": "", "exception_reason": "settlement_exceeds_ledger", "ledger_amount": 12896.42, "settlement_amount": 15270.08, "confidence": 90, "severity": "MEDIUM", "detail": "Settlement amount (\u20b915270.08) is \u20b92373.66 HIGHER than the ledger amount (\u20b912896.42) -- gateway paid more than the merchant's books expected. Possible refund reversal, correction credit, or duplicate top-up.", "is_review_item": false}, {"txn_ref": "TXN21008", "status": "EXCEPTION", "match_type": "", "exception_reason": "missing_settlement", "ledger_amount": 6715.06, "settlement_amount": null, "confidence": 40, "severity": "MEDIUM", "detail": "Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap.", "is_review_item": true}, {"txn_ref": "TXN21009", "status": "EXCEPTION", "match_type": "", "exception_reason": "partial_payment", "ledger_amount": 9404.87, "settlement_amount": 5445.12, "confidence": 77, "severity": "MEDIUM", "detail": "Settlement amount (\u20b95445.12) is \u20b93959.75 (42.1%) below the ledger amount (\u20b99404.87) -- too large to be a normal gateway fee. Likely a partial payment or refund.", "is_review_item": true}, {"txn_ref": "TXN21010", "status": "EXCEPTION", "match_type": "", "exception_reason": "duplicate_settlement", "ledger_amount": 13122.09, "settlement_amount": 13122.09, "confidence": 100, "severity": "HIGH", "detail": "2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.", "is_review_item": false}, {"txn_ref": "TXN21011", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 1243.1, "settlement_amount": 1243.1, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21012", "status": "MATCHED", "match_type": "fee_adjusted", "exception_reason": "", "ledger_amount": 4737.14, "settlement_amount": 4632.92, "confidence": 99, "severity": "", "detail": "Settlement is 2.20% below ledger amount (\u20b9104.22), consistent with a gateway fee deduction.", "is_review_item": false}, {"txn_ref": "TXN21013", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 7227.49, "settlement_amount": 7227.49, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21014", "status": "MATCHED", "match_type": "fee_adjusted", "exception_reason": "", "ledger_amount": 8613.39, "settlement_amount": 8441.12, "confidence": 99, "severity": "", "detail": "Settlement is 2.00% below ledger amount (\u20b9172.27), consistent with a gateway fee deduction.", "is_review_item": false}, {"txn_ref": "TXN21015", "status": "EXCEPTION", "match_type": "", "exception_reason": "partial_payment", "ledger_amount": 2176.23, "settlement_amount": 978.09, "confidence": 71, "severity": "MEDIUM", "detail": "Settlement amount (\u20b9978.09) is \u20b91198.14 (55.1%) below the ledger amount (\u20b92176.23) -- too large to be a normal gateway fee. Likely a partial payment or refund.", "is_review_item": true}, {"txn_ref": "TXN21016", "status": "MATCHED", "match_type": "fee_adjusted", "exception_reason": "", "ledger_amount": 10431.93, "settlement_amount": 10202.43, "confidence": 99, "severity": "", "detail": "Settlement is 2.20% below ledger amount (\u20b9229.50), consistent with a gateway fee deduction.", "is_review_item": false}, {"txn_ref": "TXN21017", "status": "MATCHED", "match_type": "timing_offset", "exception_reason": "", "ledger_amount": 9464.24, "settlement_amount": 9464.24, "confidence": 89, "severity": "", "detail": "Amount matches exactly; settlement lagged ledger by 6 day(s), within the normal settlement window.", "is_review_item": true}, {"txn_ref": "TXN21018", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 17876.86, "settlement_amount": 17876.86, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21019", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 1808.73, "settlement_amount": 1808.73, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21020", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 17162.13, "settlement_amount": 17162.13, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21021", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 10551.26, "settlement_amount": 10551.26, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21022", "status": "MATCHED", "match_type": "fee_adjusted", "exception_reason": "", "ledger_amount": 15505.8, "settlement_amount": 15118.16, "confidence": 99, "severity": "", "detail": "Settlement is 2.50% below ledger amount (\u20b9387.64), consistent with a gateway fee deduction.", "is_review_item": false}, {"txn_ref": "TXN21023", "status": "EXCEPTION", "match_type": "", "exception_reason": "missing_ledger_entry", "ledger_amount": null, "settlement_amount": 9260.21, "confidence": 40, "severity": "MEDIUM", "detail": "Settlement received but no corresponding ledger entry exists. Possible unrecorded sale, or a booking-system sync issue.", "is_review_item": true}, {"txn_ref": "TXN21024", "status": "MATCHED", "match_type": "fee_adjusted", "exception_reason": "", "ledger_amount": 5139.76, "settlement_amount": 5047.24, "confidence": 99, "severity": "", "detail": "Settlement is 1.80% below ledger amount (\u20b992.52), consistent with a gateway fee deduction.", "is_review_item": false}, {"txn_ref": "TXN21025", "status": "EXCEPTION", "match_type": "", "exception_reason": "missing_settlement", "ledger_amount": 11311.76, "settlement_amount": null, "confidence": 40, "severity": "MEDIUM", "detail": "Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap.", "is_review_item": true}, {"txn_ref": "TXN21026", "status": "MATCHED", "match_type": "timing_offset", "exception_reason": "", "ledger_amount": 16177.19, "settlement_amount": 16177.19, "confidence": 92, "severity": "", "detail": "Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window.", "is_review_item": false}, {"txn_ref": "TXN21027", "status": "MATCHED", "match_type": "timing_offset", "exception_reason": "", "ledger_amount": 10825.85, "settlement_amount": 10825.85, "confidence": 92, "severity": "", "detail": "Amount matches exactly; settlement lagged ledger by 4 day(s), within the normal settlement window.", "is_review_item": false}, {"txn_ref": "TXN21028", "status": "EXCEPTION", "match_type": "", "exception_reason": "missing_settlement", "ledger_amount": 2264.35, "settlement_amount": null, "confidence": 40, "severity": "MEDIUM", "detail": "Ledger expects this transaction but no matching settlement was received. Possible payment failure, delayed payout beyond window, or gateway data gap.", "is_review_item": true}, {"txn_ref": "TXN21029", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 1117.35, "settlement_amount": 1117.35, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21030", "status": "MATCHED", "match_type": "fee_adjusted", "exception_reason": "", "ledger_amount": 11673.77, "settlement_amount": 11440.29, "confidence": 99, "severity": "", "detail": "Settlement is 2.00% below ledger amount (\u20b9233.48), consistent with a gateway fee deduction.", "is_review_item": false}, {"txn_ref": "TXN21031", "status": "MATCHED", "match_type": "fee_adjusted", "exception_reason": "", "ledger_amount": 11323.59, "settlement_amount": 10768.73, "confidence": 98, "severity": "", "detail": "Settlement is 4.90% below ledger amount (\u20b9554.86), consistent with a gateway fee deduction.", "is_review_item": false}, {"txn_ref": "TXN21032", "status": "EXCEPTION", "match_type": "", "exception_reason": "partial_payment", "ledger_amount": 9136.43, "settlement_amount": 3937.59, "confidence": 70, "severity": "MEDIUM", "detail": "Settlement amount (\u20b93937.59) is \u20b95198.84 (56.9%) below the ledger amount (\u20b99136.43) -- too large to be a normal gateway fee. Likely a partial payment or refund.", "is_review_item": true}, {"txn_ref": "TXN21033", "status": "MATCHED", "match_type": "timing_offset", "exception_reason": "", "ledger_amount": 2831.38, "settlement_amount": 2831.38, "confidence": 94, "severity": "", "detail": "Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window.", "is_review_item": false}, {"txn_ref": "TXN21034", "status": "EXCEPTION", "match_type": "", "exception_reason": "excessive_settlement_delay", "ledger_amount": 8992.45, "settlement_amount": 8992.45, "confidence": 85, "severity": "LOW", "detail": "Settlement date is 20 days after the ledger order date, beyond the normal 7-day settlement window.", "is_review_item": false}, {"txn_ref": "TXN21035", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 10835.83, "settlement_amount": 10835.83, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21036", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 16024.14, "settlement_amount": 16024.14, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21037", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 7111.34, "settlement_amount": 7111.34, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21038", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 14425.31, "settlement_amount": 14425.31, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21039", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 15578.97, "settlement_amount": 15578.97, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21040", "status": "MATCHED", "match_type": "fee_adjusted", "exception_reason": "", "ledger_amount": 15044.95, "settlement_amount": 14307.75, "confidence": 98, "severity": "", "detail": "Settlement is 4.90% below ledger amount (\u20b9737.20), consistent with a gateway fee deduction.", "is_review_item": false}, {"txn_ref": "TXN21041", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 13574.86, "settlement_amount": 13574.86, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21042", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 19292.68, "settlement_amount": 19292.68, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21043", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 14886.04, "settlement_amount": 14886.04, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21044", "status": "EXCEPTION", "match_type": "", "exception_reason": "settlement_exceeds_ledger", "ledger_amount": 3510.73, "settlement_amount": 4077.92, "confidence": 91, "severity": "MEDIUM", "detail": "Settlement amount (\u20b94077.92) is \u20b9567.19 HIGHER than the ledger amount (\u20b93510.73) -- gateway paid more than the merchant's books expected. Possible refund reversal, correction credit, or duplicate top-up.", "is_review_item": false}, {"txn_ref": "TXN21045", "status": "EXCEPTION", "match_type": "", "exception_reason": "excessive_settlement_delay", "ledger_amount": 15208.05, "settlement_amount": 15208.05, "confidence": 85, "severity": "MEDIUM", "detail": "Settlement date is 14 days after the ledger order date, beyond the normal 7-day settlement window.", "is_review_item": false}, {"txn_ref": "TXN21046", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 3836.03, "settlement_amount": 3836.03, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21047", "status": "EXCEPTION", "match_type": "", "exception_reason": "settlement_exceeds_ledger", "ledger_amount": 14913.29, "settlement_amount": 15821.08, "confidence": 97, "severity": "MEDIUM", "detail": "Settlement amount (\u20b915821.08) is \u20b9907.79 HIGHER than the ledger amount (\u20b914913.29) -- gateway paid more than the merchant's books expected. Possible refund reversal, correction credit, or duplicate top-up.", "is_review_item": false}, {"txn_ref": "TXN21048", "status": "MATCHED", "match_type": "fee_adjusted", "exception_reason": "", "ledger_amount": 9455.11, "settlement_amount": 9266.01, "confidence": 99, "severity": "", "detail": "Settlement is 2.00% below ledger amount (\u20b9189.10), consistent with a gateway fee deduction.", "is_review_item": false}, {"txn_ref": "TXN21049", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 5366.86, "settlement_amount": 5366.86, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21050", "status": "MATCHED", "match_type": "timing_offset", "exception_reason": "", "ledger_amount": 13534.42, "settlement_amount": 13534.42, "confidence": 94, "severity": "", "detail": "Amount matches exactly; settlement lagged ledger by 3 day(s), within the normal settlement window.", "is_review_item": false}, {"txn_ref": "TXN21051", "status": "EXCEPTION", "match_type": "", "exception_reason": "excessive_settlement_delay", "ledger_amount": 18289.66, "settlement_amount": 18289.66, "confidence": 85, "severity": "MEDIUM", "detail": "Settlement date is 14 days after the ledger order date, beyond the normal 7-day settlement window.", "is_review_item": false}, {"txn_ref": "TXN21052", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 8747.61, "settlement_amount": 8747.61, "confidence": 100, "severity": "", "detail": "Amount and date match exactly.", "is_review_item": false}, {"txn_ref": "TXN21053", "status": "MATCHED", "match_type": "fee_adjusted", "exception_reason": "", "ledger_amount": 3069.65, "settlement_amount": 2992.91, "confidence": 99, "severity": "", "detail": "Settlement is 2.50% below ledger amount (\u20b976.74), consistent with a gateway fee deduction.", "is_review_item": false}, {"txn_ref": "TXN21054", "status": "EXCEPTION", "match_type": "", "exception_reason": "duplicate_settlement", "ledger_amount": 11007.36, "settlement_amount": 11007.36, "confidence": 100, "severity": "HIGH", "detail": "2 settlement entries found for this reference (expected exactly 1). Needs manual review to determine which is valid.", "is_review_item": false}];
+let currentSort = { column: 0, ascending: true };
+
+function updateDisplay() {
+  const confMin = parseInt(document.getElementById('confMin').value);
+  const confMax = parseInt(document.getElementById('confMax').value);
+  const status = document.querySelector('input[name="status"]:checked').value;
+  const reviewOnly = document.getElementById('reviewQueueOnly').checked;
+
+  document.getElementById('confMinVal').textContent = confMin;
+  document.getElementById('confMaxVal').textContent = confMax;
+
+  let filtered = RECORDS.filter(r => {
+    if (r.confidence !== null && (r.confidence < confMin || r.confidence > confMax)) return false;
+    if (status !== 'ALL' && r.status !== status) return false;
+    if (reviewOnly && !r.is_review_item) return false;
+    return true;
+  });
+
+  // Update stats
+  const matched = filtered.filter(r => r.status === 'MATCHED').length;
+  const exceptions = filtered.filter(r => r.status === 'EXCEPTION').length;
+  const reviewItems = filtered.filter(r => r.is_review_item).length;
+  const matchRate = (matched / (matched + exceptions) * 100).toFixed(1);
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Records Displayed</div>
+      <div class="stat-value">${filtered.length}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Matched</div>
+      <div class="stat-value matched">${matched} (${matchRate}%)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Exceptions</div>
+      <div class="stat-value exception">${exceptions}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Review Queue</div>
+      <div class="stat-value review">${reviewItems}</div>
+    </div>
+  `;
+
+  // Update table
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = filtered.map(r => `
+    <tr class="${r.is_review_item ? 'review-item' : ''}">
+      <td class="ref">${r.txn_ref}${r.is_review_item ? ' 🔍' : ''}</td>
+      <td>
+        <span class="status-badge ${r.status}">${r.status === 'MATCHED' ? r.match_type : r.exception_reason}</span>
+      </td>
+      <td class="confidence ${r.confidence >= 85 ? 'high' : r.confidence >= 70 ? 'medium' : 'low'}">${r.confidence ?? '—'}</td>
+      <td class="amt">${r.ledger_amount !== null ? '₹' + r.ledger_amount.toLocaleString('en-IN', {minimumFractionDigits:2}) : '—'}</td>
+      <td class="amt">${r.settlement_amount !== null ? '₹' + r.settlement_amount.toLocaleString('en-IN', {minimumFractionDigits:2}) : '—'}</td>
+      <td class="detail">${r.detail}</td>
+    </tr>
+  `).join('');
+}
+
+function sortTable(column) {
+  if (currentSort.column === column) {
+    currentSort.ascending = !currentSort.ascending;
+  } else {
+    currentSort.column = column;
+    currentSort.ascending = true;
+  }
+  updateDisplay();
+}
+
+document.getElementById('confMin').addEventListener('input', updateDisplay);
+document.getElementById('confMax').addEventListener('input', updateDisplay);
+document.querySelectorAll('input[name="status"]').forEach(r => r.addEventListener('change', updateDisplay));
+document.getElementById('reviewQueueOnly').addEventListener('change', updateDisplay);
+
+updateDisplay();
+</script>
+</body>
+</html>

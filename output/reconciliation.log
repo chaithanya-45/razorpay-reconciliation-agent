@@ -116,3 +116,38 @@
 {"timestamp": "2026-09-01T19:20:54", "level": "INFO", "event": "analyze_gateway_patterns_started", "total_records": 3}
 {"timestamp": "2026-09-01T19:20:54", "level": "INFO", "event": "analyze_gateway_patterns_completed", "elapsed_seconds": 0.0, "total_records": 3}
 {"timestamp": "2026-09-01T19:20:54", "level": "INFO", "event": "reconciliation_run_completed", "total_records": 3, "matched": 0, "exceptions": 3, "match_rate_pct": 0.0, "total_exception_amount": 3000.0}
+{"timestamp": "2026-09-01T19:26:51", "level": "INFO", "event": "reconciliation_run_started", "settlement_path": [{"settlement_ref": "REVIEW-2", "paid_amount": 1000, "settle_date": "2026-08-01T00:00:00"}, {"settlement_ref": "REVIEW-3", "paid_amount": 1000, "settle_date": "2026-08-01T00:00:00"}], "ledger_path": [{"ledger_ref": "REVIEW-1", "expected_amount": 1000, "order_date": "2026-08-01T00:00:00"}], "output_dir": "C:\\Users\\CHAITA~1\\AppData\\Local\\Temp\\tmpk3psl2j7"}
+{"timestamp": "2026-09-01T19:26:51", "level": "INFO", "event": "load_and_validate_started", "settlement_path": [{"settlement_ref": "REVIEW-2", "paid_amount": 1000, "settle_date": "2026-08-01T00:00:00"}, {"settlement_ref": "REVIEW-3", "paid_amount": 1000, "settle_date": "2026-08-01T00:00:00"}], "ledger_path": [{"ledger_ref": "REVIEW-1", "expected_amount": 1000, "order_date": "2026-08-01T00:00:00"}]}
+{"timestamp": "2026-09-01T19:26:51", "level": "INFO", "event": "load_and_validate_completed", "elapsed_seconds": 0.002, "settlement_path": [{"settlement_ref": "REVIEW-2", "paid_amount": 1000, "settle_date": "2026-08-01T00:00:00"}, {"settlement_ref": "REVIEW-3", "paid_amount": 1000, "settle_date": "2026-08-01T00:00:00"}], "ledger_path": [{"ledger_ref": "REVIEW-1", "expected_amount": 1000, "order_date": "2026-08-01T00:00:00"}]}
+{"timestamp": "2026-09-01T19:26:51", "level": "INFO", "event": "data_loaded", "ledger_rows": 1, "settlement_rows": 2}
+{"timestamp": "2026-09-01T19:26:51", "level": "INFO", "event": "reconcile_started", "ledger_rows": 1, "settlement_rows": 2}
+{"timestamp": "2026-09-01T19:26:51", "level": "INFO", "event": "reconcile_completed", "elapsed_seconds": 0.001, "ledger_rows": 1, "settlement_rows": 2}
+{"timestamp": "2026-09-01T19:26:51", "level": "WARNING", "event": "high_exception_rate", "exception_pct": 100.0, "total_records": 3}
+{"timestamp": "2026-09-01T19:26:51", "level": "INFO", "event": "analyze_gateway_patterns_started", "total_records": 3}
+{"timestamp": "2026-09-01T19:26:51", "level": "INFO", "event": "analyze_gateway_patterns_completed", "elapsed_seconds": 0.0, "total_records": 3}
+{"timestamp": "2026-09-01T19:26:51", "level": "INFO", "event": "generate_enhanced_dashboard_started", "total_records": 3}
+{"timestamp": "2026-09-01T19:26:51", "level": "INFO", "event": "generate_enhanced_dashboard_completed", "elapsed_seconds": 0.043, "total_records": 3}
+{"timestamp": "2026-09-01T19:26:51", "level": "INFO", "event": "reconciliation_run_completed", "total_records": 3, "matched": 0, "exceptions": 3, "match_rate_pct": 0.0, "total_exception_amount": 3000.0}
+{"timestamp": "2026-09-01T19:27:10", "level": "INFO", "event": "reconciliation_run_started", "settlement_path": [{"settlement_ref": "REVIEW-2", "paid_amount": 1000, "settle_date": "2026-08-01T00:00:00"}, {"settlement_ref": "REVIEW-3", "paid_amount": 1000, "settle_date": "2026-08-01T00:00:00"}], "ledger_path": [{"ledger_ref": "REVIEW-1", "expected_amount": 1000, "order_date": "2026-08-01T00:00:00"}], "output_dir": "C:\\Users\\CHAITA~1\\AppData\\Local\\Temp\\tmpgct17c_5"}
+{"timestamp": "2026-09-01T19:27:10", "level": "INFO", "event": "load_and_validate_started", "settlement_path": [{"settlement_ref": "REVIEW-2", "paid_amount": 1000, "settle_date": "2026-08-01T00:00:00"}, {"settlement_ref": "REVIEW-3", "paid_amount": 1000, "settle_date": "2026-08-01T00:00:00"}], "ledger_path": [{"ledger_ref": "REVIEW-1", "expected_amount": 1000, "order_date": "2026-08-01T00:00:00"}]}
+{"timestamp": "2026-09-01T19:27:10", "level": "INFO", "event": "load_and_validate_completed", "elapsed_seconds": 0.001, "settlement_path": [{"settlement_ref": "REVIEW-2", "paid_amount": 1000, "settle_date": "2026-08-01T00:00:00"}, {"settlement_ref": "REVIEW-3", "paid_amount": 1000, "settle_date": "2026-08-01T00:00:00"}], "ledger_path": [{"ledger_ref": "REVIEW-1", "expected_amount": 1000, "order_date": "2026-08-01T00:00:00"}]}
+{"timestamp": "2026-09-01T19:27:10", "level": "INFO", "event": "data_loaded", "ledger_rows": 1, "settlement_rows": 2}
+{"timestamp": "2026-09-01T19:27:10", "level": "INFO", "event": "reconcile_started", "ledger_rows": 1, "settlement_rows": 2}
+{"timestamp": "2026-09-01T19:27:10", "level": "INFO", "event": "reconcile_completed", "elapsed_seconds": 0.001, "ledger_rows": 1, "settlement_rows": 2}
+{"timestamp": "2026-09-01T19:27:10", "level": "WARNING", "event": "high_exception_rate", "exception_pct": 100.0, "total_records": 3}
+{"timestamp": "2026-09-01T19:27:10", "level": "INFO", "event": "analyze_gateway_patterns_started", "total_records": 3}
+{"timestamp": "2026-09-01T19:27:10", "level": "INFO", "event": "analyze_gateway_patterns_completed", "elapsed_seconds": 0.001, "total_records": 3}
+{"timestamp": "2026-09-01T19:27:10", "level": "INFO", "event": "generate_enhanced_dashboard_started", "total_records": 3}
+{"timestamp": "2026-09-01T19:27:10", "level": "INFO", "event": "generate_enhanced_dashboard_completed", "elapsed_seconds": 0.005, "total_records": 3}
+{"timestamp": "2026-09-01T19:27:10", "level": "INFO", "event": "reconciliation_run_completed", "total_records": 3, "matched": 0, "exceptions": 3, "match_rate_pct": 0.0, "total_exception_amount": 3000.0}
+{"timestamp": "2026-09-01T19:27:27", "level": "INFO", "event": "reconciliation_run_started", "settlement_path": "data/settlement_test2.csv", "ledger_path": "data/ledger_test2.csv", "output_dir": "output"}
+{"timestamp": "2026-09-01T19:27:27", "level": "INFO", "event": "load_and_validate_started", "settlement_path": "data/settlement_test2.csv", "ledger_path": "data/ledger_test2.csv"}
+{"timestamp": "2026-09-01T19:27:27", "level": "INFO", "event": "load_and_validate_completed", "elapsed_seconds": 0.009, "settlement_path": "data/settlement_test2.csv", "ledger_path": "data/ledger_test2.csv"}
+{"timestamp": "2026-09-01T19:27:27", "level": "INFO", "event": "data_loaded", "ledger_rows": 53, "settlement_rows": 54}
+{"timestamp": "2026-09-01T19:27:27", "level": "INFO", "event": "reconcile_started", "ledger_rows": 53, "settlement_rows": 54}
+{"timestamp": "2026-09-01T19:27:27", "level": "INFO", "event": "reconcile_completed", "elapsed_seconds": 0.005, "ledger_rows": 53, "settlement_rows": 54}
+{"timestamp": "2026-09-01T19:27:27", "level": "INFO", "event": "analyze_gateway_patterns_started", "total_records": 55}
+{"timestamp": "2026-09-01T19:27:27", "level": "INFO", "event": "analyze_gateway_patterns_completed", "elapsed_seconds": 0.0, "total_records": 55}
+{"timestamp": "2026-09-01T19:27:27", "level": "INFO", "event": "generate_enhanced_dashboard_started", "total_records": 55}
+{"timestamp": "2026-09-01T19:27:27", "level": "INFO", "event": "generate_enhanced_dashboard_completed", "elapsed_seconds": 0.046, "total_records": 55}
+{"timestamp": "2026-09-01T19:27:27", "level": "INFO", "event": "reconciliation_run_completed", "total_records": 55, "matched": 38, "exceptions": 17, "match_rate_pct": 69.1, "total_exception_amount": 176674.03}

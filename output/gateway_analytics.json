@@ -1,0 +1,118 @@
+{
+  "patterns": {
+    "total_transactions": 55,
+    "matched_transactions": 38,
+    "exception_transactions": 17,
+    "match_rate_pct": 69.0909090909091,
+    "fees": {
+      "avg_pct": 2.9,
+      "median_pct": 2.2,
+      "min_pct": 1.8,
+      "max_pct": 4.9,
+      "stddev_pct": 1.3
+    },
+    "settlement_timing": {
+      "avg_delay_days": 3.6,
+      "median_delay_days": 4,
+      "max_delay_days": 4
+    },
+    "currencies": {
+      "primary": [],
+      "distribution": {}
+    },
+    "exceptions": {
+      "rate_by_reason": {
+        "partial_payment": 7.2727272727272725,
+        "missing_ledger_entry": 3.6363636363636362,
+        "settlement_exceeds_ledger": 5.454545454545454,
+        "missing_settlement": 5.454545454545454,
+        "duplicate_settlement": 3.6363636363636362,
+        "excessive_settlement_delay": 5.454545454545454
+      },
+      "severity_distribution": {
+        "MEDIUM": 14,
+        "HIGH": 2,
+        "LOW": 1
+      }
+    }
+  },
+  "anomalies": [
+    {
+      "txn_ref": "TXN21010",
+      "type": "high_confidence_exception",
+      "severity": "MEDIUM",
+      "score": 100,
+      "details": "Unambiguous exception: duplicate_settlement (100% confidence)"
+    },
+    {
+      "txn_ref": "TXN21054",
+      "type": "high_confidence_exception",
+      "severity": "MEDIUM",
+      "score": 100,
+      "details": "Unambiguous exception: duplicate_settlement (100% confidence)"
+    },
+    {
+      "txn_ref": "TXN21005",
+      "type": "unusual_fee",
+      "severity": "MEDIUM",
+      "score": 98.00095636135566,
+      "details": "Fee 4.90% exceeds typical pattern (2.90%)"
+    },
+    {
+      "txn_ref": "TXN21031",
+      "type": "unusual_fee",
+      "severity": "MEDIUM",
+      "score": 98.00072238574525,
+      "details": "Fee 4.90% exceeds typical pattern (2.90%)"
+    },
+    {
+      "txn_ref": "TXN21040",
+      "type": "unusual_fee",
+      "severity": "MEDIUM",
+      "score": 97.99966101582267,
+      "details": "Fee 4.90% exceeds typical pattern (2.90%)"
+    },
+    {
+      "txn_ref": "TXN21047",
+      "type": "high_confidence_exception",
+      "severity": "MEDIUM",
+      "score": 97,
+      "details": "Unambiguous exception: settlement_exceeds_ledger (97% confidence)"
+    },
+    {
+      "txn_ref": "TXN21044",
+      "type": "high_confidence_exception",
+      "severity": "MEDIUM",
+      "score": 91,
+      "details": "Unambiguous exception: settlement_exceeds_ledger (91% confidence)"
+    },
+    {
+      "txn_ref": "TXN21007",
+      "type": "high_confidence_exception",
+      "severity": "MEDIUM",
+      "score": 90,
+      "details": "Unambiguous exception: settlement_exceeds_ledger (90% confidence)"
+    },
+    {
+      "txn_ref": "TXN21034",
+      "type": "high_confidence_exception",
+      "severity": "MEDIUM",
+      "score": 85,
+      "details": "Unambiguous exception: excessive_settlement_delay (85% confidence)"
+    },
+    {
+      "txn_ref": "TXN21045",
+      "type": "high_confidence_exception",
+      "severity": "MEDIUM",
+      "score": 85,
+      "details": "Unambiguous exception: excessive_settlement_delay (85% confidence)"
+    },
+    {
+      "txn_ref": "TXN21051",
+      "type": "high_confidence_exception",
+      "severity": "MEDIUM",
+      "score": 85,
+      "details": "Unambiguous exception: excessive_settlement_delay (85% confidence)"
+    }
+  ]
+}

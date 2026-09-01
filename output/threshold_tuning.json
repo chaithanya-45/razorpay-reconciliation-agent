@@ -1,0 +1,199 @@
+{
+  "simulations": [
+    {
+      "threshold": 0,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 5,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 10,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 15,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 20,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 25,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 30,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 35,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 40,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 45,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 50,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 55,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 60,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 65,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 70,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 75,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 80,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 85,
+      "coverage_pct": 100.0,
+      "accuracy_pct": 30.9,
+      "auto_matched": 38,
+      "review_queue_size": 0,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 90,
+      "coverage_pct": 98.2,
+      "accuracy_pct": 31.5,
+      "auto_matched": 37,
+      "review_queue_size": 1,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 95,
+      "coverage_pct": 90.9,
+      "accuracy_pct": 34.0,
+      "auto_matched": 33,
+      "review_queue_size": 5,
+      "exceptions": 17,
+      "total_records": 55
+    },
+    {
+      "threshold": 100,
+      "coverage_pct": 70.9,
+      "accuracy_pct": 43.6,
+      "auto_matched": 22,
+      "review_queue_size": 16,
+      "exceptions": 17,
+      "total_records": 55
+    }
+  ],
+  "recommendation": {
+    "threshold": 100,
+    "coverage_pct": 70.9,
+    "accuracy_pct": 43.6,
+    "reasoning": "At 100% confidence, 70.9% of transactions are auto-matched with 43.6% accuracy. 16 transactions require human review."
+  }
+}
