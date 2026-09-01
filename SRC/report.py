@@ -21,6 +21,7 @@ import csv
 from collections import Counter
 from matcher import load_data, reconcile
 from recon_logger import get_logger, timed_stage
+from analytics import analyze_gateway_patterns, detect_anomalies, export_analytics_report
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "output")
@@ -100,6 +101,13 @@ def generate_report(settlement_path, ledger_path, output_dir):
                 r.detail,
             ])
 
+    # --- 3. Gateway analytics and anomaly detection ---
+    with timed_stage(log, "analyze_gateway_patterns", total_records=len(results)):
+        patterns = analyze_gateway_patterns(results)
+        anomalies = detect_anomalies(results, patterns)
+    analytics_path = os.path.join(output_dir, "gateway_analytics.json")
+    export_analytics_report(patterns, anomalies, analytics_path)
+
     # --- 2. Summary ---
     match_type_counts = Counter(r.match_type for r in matched)
     exception_reason_counts = Counter(r.exception_reason for r in exceptions)
@@ -150,6 +158,8 @@ def generate_report(settlement_path, ledger_path, output_dir):
 
     print(summary_text)
     print(f"\nFull report written to: {report_path}")
+    print(f"Review queue exported to: {review_queue_path}")
+    print(f"Gateway analytics written to: {analytics_path}")
     print(f"Summary written to:     {summary_path}")
 
     log.info("reconciliation_run_completed", total_records=len(results),
