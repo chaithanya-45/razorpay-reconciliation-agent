@@ -20,6 +20,8 @@ This system:
 - ✅ **Suggests concrete next actions** for each exception
 - ✅ **Creates a human review queue** for ambiguous and unresolved records
 - ✅ **Writes structured JSON logs** for pipeline observability
+- ✅ **Analyzes gateway patterns** (fees, settlement timing, currencies)
+- ✅ **Detects anomalies** in transaction patterns
 - ✅ **Runs transparently** — every decision is explainable, auditable, and logged
 
 ---
@@ -116,12 +118,14 @@ SRC/
   report.py              # generates audit trail, review queue, and summary
   recon_logger.py        # structured JSON pipeline logging
   review.py              # records human approve/reject/override decisions
+  analytics.py           # gateway pattern analysis and anomaly detection
 data/
   settlement.csv, ledger.csv, ground_truth.csv           # batch 1
   settlement_test2.csv, ledger_test2.csv, ground_truth_test2.csv  # batch 2
 output/
   reconciliation_report.csv  # full per-record audit trail
   review_queue.csv            # records requiring human review
+  gateway_analytics.json      # pattern analysis and anomaly scores
   reconciliation.log          # structured pipeline events
   summary.txt                 # headline match rate + exception breakdown
   dashboard.html               # visual report (open directly in a browser)
@@ -170,6 +174,35 @@ python SRC/review.py --txn-ref TXN1003 --decision approve --reviewer finance-tea
 Decisions are stored in `output/review_decisions.csv`. Use `--decision override`
 with `--override-status MATCHED` or `EXCEPTION` when the reviewer determines
 that the engine's original classification should change.
+
+#### Gateway Analytics and Anomaly Detection
+
+The analytics module analyzes aggregate patterns in reconciliation results:
+- Average, median, min, max, and standard deviation of gateway fees
+- Settlement timing distribution (average delay, max delay)
+- Currency usage distribution
+- Exception rates by type and severity
+
+Anomalies are detected when individual transactions deviate from patterns:
+- Fees significantly above the typical gateway fee rate
+- Settlement delays beyond the normal window
+- High-confidence exceptions that may warrant threshold tuning
+
+Run analytics manually:
+
+```bash
+python SRC/analytics.py
+```
+
+Or access it via Python:
+
+```python
+from analytics import analyze_gateway_patterns, detect_anomalies
+patterns = analyze_gateway_patterns(results)
+anomalies = detect_anomalies(results, patterns)
+```
+
+Analytics are automatically exported to `output/gateway_analytics.json` during report generation.
 
 To reproduce the independent validation batch:
 

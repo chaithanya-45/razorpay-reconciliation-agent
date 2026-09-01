@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "SRC"))
 from matcher import load_data, reconcile, validate_data
 from report import generate_report
 from review import merge_decisions, record_decision
+from analytics import analyze_gateway_patterns, detect_anomalies
 
 
 class ReconcileTests(unittest.TestCase):
@@ -173,6 +174,52 @@ class ReconcileTests(unittest.TestCase):
                 rows = list(csv.DictReader(handle))
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0]["decision"], "APPROVED")
+
+    def test_gateway_patterns_analyzes_match_rate(self):
+        ledger = pd.DataFrame([
+            {"ledger_ref": "TXN-1", "expected_amount": 1000, "order_date": pd.Timestamp("2026-08-01")},
+            {"ledger_ref": "TXN-2", "expected_amount": 2000, "order_date": pd.Timestamp("2026-08-01")},
+        ])
+        settlement = pd.DataFrame([
+            {"settlement_ref": "TXN-1", "paid_amount": 1000, "settle_date": pd.Timestamp("2026-08-01")},
+        ])
+        results = reconcile(settlement, ledger)
+        patterns = analyze_gateway_patterns(results)
+        self.assertEqual(patterns.total_transactions, 2)
+        self.assertEqual(patterns.matched_transactions, 1)
+        self.assertEqual(patterns.exception_transactions, 1)
+        self.assertAlmostEqual(patterns.match_rate_pct, 50.0, places=1)
+
+    def test_gateway_patterns_calculates_fees(self):
+        ledger = pd.DataFrame([
+            {"ledger_ref": "TXN-F1", "expected_amount": 1000, "order_date": pd.Timestamp("2026-08-01")},
+            {"ledger_ref": "TXN-F2", "expected_amount": 1000, "order_date": pd.Timestamp("2026-08-01")},
+        ])
+        settlement = pd.DataFrame([
+            {"settlement_ref": "TXN-F1", "paid_amount": 980, "settle_date": pd.Timestamp("2026-08-01")},
+            {"settlement_ref": "TXN-F2", "paid_amount": 950, "settle_date": pd.Timestamp("2026-08-01")},
+        ])
+        results = reconcile(settlement, ledger)
+        patterns = analyze_gateway_patterns(results)
+        self.assertIsNotNone(patterns.avg_fee_pct)
+        self.assertIsNotNone(patterns.median_fee_pct)
+        self.assertGreater(patterns.avg_fee_pct, 0)
+
+    def test_anomaly_detection_runs_without_error(self):
+        ledger = pd.DataFrame([
+            {"ledger_ref": "A", "expected_amount": 1000, "order_date": pd.Timestamp("2026-08-01")},
+            {"ledger_ref": "B", "expected_amount": 2000, "order_date": pd.Timestamp("2026-08-02")},
+        ])
+        settlement = pd.DataFrame([
+            {"settlement_ref": "A", "paid_amount": 950, "settle_date": pd.Timestamp("2026-08-01")},
+            {"settlement_ref": "B", "paid_amount": 2000, "settle_date": pd.Timestamp("2026-08-02")},
+        ])
+        results = reconcile(settlement, ledger)
+        patterns = analyze_gateway_patterns(results)
+        anomalies = detect_anomalies(results, patterns)
+        # Just verify the pipeline runs without errors
+        self.assertIsNotNone(patterns)
+        self.assertIsInstance(anomalies, list)
 
 
 if __name__ == "__main__":
