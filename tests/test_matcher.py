@@ -14,6 +14,8 @@ from matcher import load_data, reconcile, validate_data
 from report import generate_report
 from review import merge_decisions, record_decision
 from analytics import analyze_gateway_patterns, detect_anomalies
+from threshold_tuning import load_ground_truth, simulate_thresholds, recommend_threshold
+from dashboard_enhanced import generate_enhanced_dashboard
 
 
 class ReconcileTests(unittest.TestCase):
@@ -220,6 +222,52 @@ class ReconcileTests(unittest.TestCase):
         # Just verify the pipeline runs without errors
         self.assertIsNotNone(patterns)
         self.assertIsInstance(anomalies, list)
+
+    def test_threshold_tuning_simulates_accuracy_at_different_thresholds(self):
+        ledger = pd.DataFrame([
+            {"ledger_ref": "H", "expected_amount": 1000, "order_date": pd.Timestamp("2026-08-01")},
+            {"ledger_ref": "L", "expected_amount": 2000, "order_date": pd.Timestamp("2026-08-02")},
+        ])
+        settlement = pd.DataFrame([
+            {"settlement_ref": "H", "paid_amount": 1000, "settle_date": pd.Timestamp("2026-08-01")},
+            {"settlement_ref": "L", "paid_amount": 1900, "settle_date": pd.Timestamp("2026-08-02")},
+        ])
+        results = reconcile(settlement, ledger)
+        ground_truth = {"H": "MATCHED", "L": "EXCEPTION"}
+        simulations = simulate_thresholds(results, ground_truth)
+        self.assertGreater(len(simulations), 0)
+        self.assertTrue(all("threshold" in s and "accuracy_pct" in s for s in simulations))
+
+    def test_threshold_recommendation_returns_valid_threshold(self):
+        simulations = [
+            {"threshold": t, "accuracy_pct": 90 + t * 0.1, "coverage_pct": 100 - t, "auto_matched": 100, "review_queue_size": 0, "exceptions": 0, "total_records": 100}
+            for t in range(0, 101, 5)
+        ]
+        rec = recommend_threshold(simulations)
+        self.assertIsNotNone(rec)
+        self.assertIn("threshold", rec)
+        self.assertGreaterEqual(rec["accuracy_pct"], 0)
+
+    def test_enhanced_dashboard_generates_without_error(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            report_path = os.path.join(tmpdir, "reconciliation_report.csv")
+            review_path = os.path.join(tmpdir, "review_queue.csv")
+            output_path = os.path.join(tmpdir, "dashboard_enhanced.html")
+            
+            with open(report_path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=["txn_ref", "status", "match_type", "exception_reason", "ledger_amount", "settlement_amount", "confidence", "severity", "detail"])
+                writer.writeheader()
+                writer.writerow({"txn_ref": "TXN-1", "status": "MATCHED", "match_type": "exact", "exception_reason": "", "ledger_amount": 1000, "settlement_amount": 1000, "confidence": 100, "severity": "", "detail": "Test"})
+            
+            with open(review_path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=["txn_ref"])
+                writer.writeheader()
+            
+            generate_enhanced_dashboard(report_path, review_path, output_path)
+            self.assertTrue(os.path.exists(output_path))
+            with open(output_path, "r", encoding="utf-8") as f:
+                content = f.read()
+                self.assertIn("Enhanced Dashboard", content)
 
 
 if __name__ == "__main__":

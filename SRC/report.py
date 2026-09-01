@@ -22,6 +22,7 @@ from collections import Counter
 from matcher import load_data, reconcile
 from recon_logger import get_logger, timed_stage
 from analytics import analyze_gateway_patterns, detect_anomalies, export_analytics_report
+from dashboard_enhanced import generate_enhanced_dashboard
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "output")
@@ -107,6 +108,13 @@ def generate_report(settlement_path, ledger_path, output_dir):
         anomalies = detect_anomalies(results, patterns)
     analytics_path = os.path.join(output_dir, "gateway_analytics.json")
     export_analytics_report(patterns, anomalies, analytics_path)
+
+    # --- 4. Enhanced dashboard with confidence filters ---
+    with timed_stage(log, "generate_enhanced_dashboard", total_records=len(results)):
+        reconciliation_report_path = os.path.join(output_dir, "reconciliation_report.csv")
+        review_queue_path = os.path.join(output_dir, "review_queue.csv")
+        dashboard_enhanced_path = os.path.join(output_dir, "dashboard_enhanced.html")
+        generate_enhanced_dashboard(reconciliation_report_path, review_queue_path, dashboard_enhanced_path)
 
     # --- 2. Summary ---
     match_type_counts = Counter(r.match_type for r in matched)

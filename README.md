@@ -112,26 +112,30 @@ Tested on **two independent synthetic datasets** — a 220-record development se
 
 ```
 SRC/
-  generate_data.py       # synthetic settlement + ledger data generator (batch 1)
-  generate_data_test2.py # second, independent unseen test batch
-  matcher.py             # core reconciliation engine
-  report.py              # generates audit trail, review queue, and summary
-  recon_logger.py        # structured JSON pipeline logging
-  review.py              # records human approve/reject/override decisions
-  analytics.py           # gateway pattern analysis and anomaly detection
+  generate_data.py         # synthetic settlement + ledger data generator (batch 1)
+  generate_data_test2.py   # second, independent unseen test batch
+  matcher.py               # core reconciliation engine
+  report.py                # generates audit trail, review queue, and summary
+  recon_logger.py          # structured JSON pipeline logging
+  review.py                # records human approve/reject/override decisions
+  analytics.py             # gateway pattern analysis and anomaly detection
+  threshold_tuning.py      # confidence threshold simulation against ground truth
+  dashboard_enhanced.py    # enhanced HTML dashboard with interactive filters
 data/
   settlement.csv, ledger.csv, ground_truth.csv           # batch 1
   settlement_test2.csv, ledger_test2.csv, ground_truth_test2.csv  # batch 2
 output/
-  reconciliation_report.csv  # full per-record audit trail
-  review_queue.csv            # records requiring human review
-  gateway_analytics.json      # pattern analysis and anomaly scores
-  reconciliation.log          # structured pipeline events
-  summary.txt                 # headline match rate + exception breakdown
-  dashboard.html               # visual report (open directly in a browser)
+  reconciliation_report.csv   # full per-record audit trail
+  review_queue.csv             # records requiring human review
+  gateway_analytics.json       # pattern analysis and anomaly scores
+  threshold_tuning.json        # confidence threshold simulation results
+  dashboard.html               # visual report (legacy)
+  dashboard_enhanced.html      # enhanced dashboard with interactive filters
+  reconciliation.log           # structured pipeline events
+  summary.txt                  # headline match rate + exception breakdown
 tests/
-  test_matcher.py             # automated tests for matching and exception rules
-requirements.txt              # pinned dependency ranges
+  test_matcher.py              # automated tests for matching and exception rules
+requirements.txt               # pinned dependency ranges
 ```
 
 ## Running it
@@ -203,6 +207,53 @@ anomalies = detect_anomalies(results, patterns)
 ```
 
 Analytics are automatically exported to `output/gateway_analytics.json` during report generation.
+
+#### Confidence Threshold Tuning
+
+The matching engine produces a confidence score (0-100) for every decision. The threshold tuning module simulates different confidence thresholds to find the optimal balance between automatic matching and human review:
+
+Run threshold simulation against ground truth data:
+
+```bash
+python SRC/threshold_tuning.py \
+  --ground-truth data/ground_truth_test2.csv \
+  --settlement data/settlement_test2.csv \
+  --ledger data/ledger_test2.csv \
+  --output-dir output
+```
+
+This generates `output/threshold_tuning.json` with:
+- Accuracy % at each confidence threshold (0%, 5%, 10%, ... 100%)
+- Coverage % (portion of records auto-matched at that threshold)
+- Recommended threshold (highest accuracy ≥95% or maximum available)
+- Count of records in auto-match vs. review queue at each threshold
+
+**Example output:**
+```
+Threshold    Coverage     Accuracy     Auto-matched  Review queue  
+0            100.0        43.6         55            0         
+50           100.0        43.6         55            0         
+90           98.2         68.5         54            1         
+100          70.9         89.2         39            16        
+```
+
+#### Enhanced Interactive Dashboard
+
+The reconciliation report pipeline now generates an enhanced HTML dashboard with real-time filtering:
+
+```bash
+python SRC/report.py --settlement data/settlement_test2.csv --ledger data/ledger_test2.csv --output-dir output
+```
+
+This creates `output/dashboard_enhanced.html` with:
+- **Confidence range sliders** — Filter by min/max confidence (0-100%, 5% increments)
+- **Status filter** — Show all / matched only / exceptions only
+- **Review queue filter** — Highlight records requiring human attention (marked with 🔍)
+- **Real-time statistics** — Updates live as you filter (total records, match rate, review queue size)
+- **Sortable columns** — Click column headers to sort by confidence, amount, or reference
+- **Color-coded confidence** — Green (≥85%), Orange (70-84%), Red (<70%)
+
+Open the dashboard in any browser to explore the reconciliation results interactively.
 
 To reproduce the independent validation batch:
 
