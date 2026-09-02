@@ -7,6 +7,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
+from fastapi.testclient import TestClient
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "SRC"))
 
@@ -16,6 +17,7 @@ from review import merge_decisions, record_decision
 from analytics import analyze_gateway_patterns, detect_anomalies
 from threshold_tuning import load_ground_truth, simulate_thresholds, recommend_threshold
 from dashboard_enhanced import generate_enhanced_dashboard
+from api import app
 
 
 class ReconcileTests(unittest.TestCase):
@@ -268,6 +270,46 @@ class ReconcileTests(unittest.TestCase):
             with open(output_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 self.assertIn("Enhanced Dashboard", content)
+
+    def test_api_health_check(self):
+        client = TestClient(app)
+        response = client.get("/health")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], "ok")
+
+    def test_api_reconcile_and_review_decision_endpoints(self):
+        client = TestClient(app)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            ledger_path = os.path.join(tmpdir, "ledger.csv")
+            settlement_path = os.path.join(tmpdir, "settlement.csv")
+            output_dir = os.path.join(tmpdir, "output")
+
+            pd.DataFrame([
+                {"ledger_ref": "API-TXN-1", "expected_amount": 1000, "order_date": "2026-08-01"}
+            ]).to_csv(ledger_path, index=False)
+            pd.DataFrame([
+                {"settlement_ref": "API-TXN-1", "paid_amount": 1000, "settle_date": "2026-08-01"}
+            ]).to_csv(settlement_path, index=False)
+
+            reconcile_response = client.post(
+                "/reconcile",
+                json={"settlement_path": settlement_path, "ledger_path": ledger_path, "output_dir": output_dir},
+            )
+            self.assertEqual(reconcile_response.status_code, 200)
+            self.assertGreaterEqual(reconcile_response.json()["match_rate_pct"], 0)
+
+            decision_response = client.post(
+                "/review-decisions",
+                json={
+                    "txn_ref": "API-TXN-1",
+                    "decision": "approve",
+                    "reviewer": "finance-team",
+                    "notes": "Verified",
+                    "decision_path": os.path.join(output_dir, "review_decisions.csv"),
+                },
+            )
+            self.assertEqual(decision_response.status_code, 200)
+            self.assertEqual(decision_response.json()["decision"]["decision"], "APPROVED")
 
 
 if __name__ == "__main__":

@@ -121,6 +121,7 @@ SRC/
   analytics.py             # gateway pattern analysis and anomaly detection
   threshold_tuning.py      # confidence threshold simulation against ground truth
   dashboard_enhanced.py    # enhanced HTML dashboard with interactive filters
+  api.py                   # FastAPI service for health checks, reconciliation, and reviewer actions
 data/
   settlement.csv, ledger.csv, ground_truth.csv           # batch 1
   settlement_test2.csv, ledger_test2.csv, ground_truth_test2.csv  # batch 2
@@ -207,6 +208,31 @@ anomalies = detect_anomalies(results, patterns)
 ```
 
 Analytics are automatically exported to `output/gateway_analytics.json` during report generation.
+
+#### API Access
+
+The project also exposes a lightweight FastAPI service for programmatic use:
+
+```bash
+python SRC/api.py
+```
+
+Then call the endpoints from your app or browser:
+
+```bash
+curl http://localhost:8000/health
+curl -X POST http://localhost:8000/reconcile \
+  -H "Content-Type: application/json" \
+  -d '{"settlement_path":"data/settlement_test2.csv","ledger_path":"data/ledger_test2.csv","output_dir":"output"}'
+curl -X POST http://localhost:8000/review-decisions \
+  -H "Content-Type: application/json" \
+  -d '{"txn_ref":"TXN-1003","decision":"approve","reviewer":"finance-team","notes":"Confirmed in portal","decision_path":"output/review_decisions.csv"}'
+```
+
+Available routes:
+- `GET /health` — service health check
+- `POST /reconcile` — reconciles the supplied settlement and ledger files and writes outputs
+- `POST /review-decisions` — records a reviewer approval/rejection/override decision
 
 #### Confidence Threshold Tuning
 
