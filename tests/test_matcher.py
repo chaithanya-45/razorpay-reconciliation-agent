@@ -311,6 +311,22 @@ class ReconcileTests(unittest.TestCase):
             self.assertEqual(decision_response.status_code, 200)
             self.assertEqual(decision_response.json()["decision"]["decision"], "APPROVED")
 
+    def test_review_ui_and_review_queue_api(self):
+        client = TestClient(app)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            queue_path = os.path.join(tmpdir, "review_queue.csv")
+            with open(queue_path, "w", newline="", encoding="utf-8") as handle:
+                handle.write("txn_ref,status,decision_bucket,match_type,exception_reason,confidence,severity,recommended_action,candidate_matches,detail\n")
+                handle.write("TXN-UI-1,EXCEPTION,REVIEW,partial_payment,partial_payment,75,HIGH,Contact gateway,,Needs review\n")
+
+            ui_response = client.get("/review-ui")
+            self.assertEqual(ui_response.status_code, 200)
+            self.assertIn("Review Queue", ui_response.text)
+
+            queue_response = client.get("/review-queue", params={"path": queue_path})
+            self.assertEqual(queue_response.status_code, 200)
+            self.assertEqual(queue_response.json()[0]["txn_ref"], "TXN-UI-1")
+
 
 if __name__ == "__main__":
     unittest.main()
