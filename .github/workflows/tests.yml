@@ -26,4 +26,5 @@ jobs:
         run: python -m unittest discover -s tests -v
 
       - name: Check syntax
-        run: python -m py_compile SRC/*.py tests/*.py
+        run: >
+          python -c "import py_compile, pathlib; files = sorted(list(pathlib.Path('SRC').glob('*.py')) + list(pathlib.Path('tests').glob('*.py'))); [py_compile.compile(str(f), doraise=True) for f in files]; print('Syntax OK')"
