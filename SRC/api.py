@@ -10,7 +10,7 @@ from matcher import load_data, reconcile
 from review import record_decision
 from report import generate_report
 
-app = FastAPI(title="AI Finance Controller API", version="1.0.0")
+app = FastAPI(title="ReconciliAI API", version="1.0.0")
 
 
 def _read_review_queue(path: str):

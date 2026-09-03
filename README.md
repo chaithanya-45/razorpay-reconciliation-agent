@@ -1,10 +1,10 @@
-# 💰 Reconciliation Agent — AI Finance Controller
+# 💰 ReconciliAI — Intelligent Payment Reconciliation & Exception Intelligence
 
 > **Automated payment reconciliation with explainability at its core.** Reconcile thousands of transactions in seconds, get clear answers on mismatches, and know exactly why each one happened.
 
-Built for the **Razorpay Buildathon**, Track 04: *AI Finance Controller*.
+Built for the **Razorpay Buildathon**, Track 04: *ReconciliAI*.
 
-🌐 **[Live Dashboard →](https://chaithanya-45.github.io/razorpay-reconciliation-agent/)** | 📊 **[View Results](output/summary.txt)** | 🧪 **[Run Tests](tests/test_matcher.py)**
+🌐 **[Live Dashboard →](https://your-domain.github.io/reconciliAI/)** | 📊 **[View Results](output/summary.txt)** | 🧪 **[Run Tests](tests/test_matcher.py)**
 
 ---
 
@@ -30,13 +30,13 @@ This system:
 
 ### Option 1: View the Live Dashboard (No setup needed)
 ```
-https://chaithanya-45.github.io/razorpay-reconciliation-agent/
+https://your-domain.github.io/reconciliAI/
 ```
 
 ### Option 2: Run Locally
 ```bash
-git clone https://github.com/chaithanya-45/razorpay-reconciliation-agent.git
-cd razorpay-reconciliation-agent
+git clone https://github.com/your-org/reconciliAI.git
+cd reconciliAI
 
 pip install -r requirements.txt
 python SRC/generate_data.py && python SRC/matcher.py && python SRC/report.py
@@ -339,7 +339,7 @@ See `scale_test.py` for performance benchmarking.
 
 ## 🏆 Resume-Ready Project Summary
 
-**AI Finance Controller | Python, pandas, rapidfuzz, GitHub Actions**
+**ReconciliAI | Python, pandas, rapidfuzz, GitHub Actions**
 
 - Built an explainable payment reconciliation engine matching gateway settlements to merchant ledger records across exact, fee-adjusted, timing-offset, and fuzzy-reference scenarios.
 - Classified 275 synthetic and unseen records with 100% agreement against independently generated ground-truth outcomes, including duplicates, partial payments, missing entries, overpayments, and excessive delays.

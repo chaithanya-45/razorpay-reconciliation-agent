@@ -53,7 +53,7 @@ def generate_enhanced_dashboard(reconciliation_report_path, review_queue_path, o
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Reconciliation Agent — Enhanced Dashboard</title>
+<title>ReconciliAI — Enhanced Dashboard</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
   :root {{
@@ -196,8 +196,8 @@ def generate_enhanced_dashboard(reconciliation_report_path, review_queue_path, o
 <body>
 <div class="wrap">
   <header>
-    <div class="eyebrow">AI Finance Controller — Track 04</div>
-    <h1>Reconciliation Agent: Enhanced Dashboard</h1>
+    <div class="eyebrow">ReconciliAI — Intelligent Payment Reconciliation</div>
+    <h1>ReconciliAI: Enhanced Dashboard</h1>
     <div class="subtitle">Interactive reconciliation analysis with confidence and review queue filters.</div>
   </header>
 
