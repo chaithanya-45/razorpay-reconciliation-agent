@@ -4,7 +4,7 @@
 
 Built for the **Razorpay Buildathon**, Track 04: *ReconciliAI*.
 
-🌐 **[Live Dashboard →](https://your-domain.github.io/reconciliAI/)** | 📊 **[View Results](output/summary.txt)** | 🧪 **[Run Tests](tests/test_matcher.py)**
+🌐 **[Live Dashboard →](https://chaithanya-45.github.io/reconciliAI/)** | 📊 **[View Results](output/summary.txt)** | 🧪 **[Run Tests](tests/test_matcher.py)**
 
 ---
 
@@ -30,12 +30,12 @@ This system:
 
 ### Option 1: View the Live Dashboard (No setup needed)
 ```
-https://your-domain.github.io/reconciliAI/
+https://chaithanya-45.github.io/reconciliAI/
 ```
 
 ### Option 2: Run Locally
 ```bash
-git clone https://github.com/your-org/reconciliAI.git
+git clone https://github.com/chaithanya-45/reconciliAI.git
 cd reconciliAI
 
 pip install -r requirements.txt
